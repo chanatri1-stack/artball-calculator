@@ -611,6 +611,7 @@
 
 <script>
     (function() {
+const APP_VERSION = '8.0.0';
         // ==================== ТАБЛИЦЫ СУЩЕСТВУЮЩИХ ОРУДИЙ ====================
         // (сохранены в том же виде, что и ранее)
         const mortarData = {
@@ -7421,6 +7422,34 @@
         selectWeapon('2S19');
         validateDistanceInput();
     })();
+// ==================== АВТООБНОВЛЕНИЕ ====================
+async function checkForUpdates() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/chanatri1-stack/artball-calculator/main/version.json?t=' + Date.now());
+        const data = await response.json();
+        if (data.version && data.version !== APP_VERSION) {
+            if (confirm('🔄 Доступна новая версия ' + data.version + '!\n\nОбновить сейчас?')) {
+                const htmlResponse = await fetch(data.url + '?t=' + Date.now());
+                const newHTML = await htmlResponse.text();
+                localStorage.setItem('cachedApp', newHTML);
+                localStorage.setItem('appVersion', data.version);
+                alert('✅ Обновление загружено! Перезапустите приложение.');
+                location.reload();
+            }
+        }
+    } catch(e) { console.log('Ошибка:', e); }
+}
+
+const cached = localStorage.getItem('cachedApp');
+if (cached) {
+    document.open();
+    document.write(cached);
+    document.close();
+    setTimeout(checkForUpdates, 5000);
+} else {
+    setTimeout(checkForUpdates, 3000);
+}
+// ========================================================
 </script>
 </body>
 </html>
