@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Арт. калькулятор</title>
+    <style>
+        body { 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: #0d1b2a; 
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+        .password-box {
+            background: #1e2b3a;
+            padding: 30px 20px;
+            border-radius: 30px;
+            border: 2px solid #2c7da0;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 30px;
+            border: 2px solid #2c7da0;
+            background: #0d1b2a;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            box-sizing: border-box;
+            outline: none;
+        }
+        button {
+            margin-top: 16px;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 30px;
+            background: #2c7da0;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .error {
+            color: #c44536;
+            margin-top: 10px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        .version {
+            color: #6c757d;
+            font-size: 0.7rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔐 Арт. калькулятор</h1>
+    <div class="password-box">
+        <input type="password" id="passwordInput" placeholder="Введите пароль">
+        <button id="loginBtn">Войти</button>
+        <div class="error" id="errorMsg">❌ Неверный пароль</div>
+    </div>
+    <div class="version">Версия 8.0.0</div>
+</div>
+
+<script>
+    const CORRECT_PASSWORD = '1234';
+
+    document.getElementById('loginBtn').addEventListener('click', function() {
+        const input = document.getElementById('passwordInput');
+        const error = document.getElementById('errorMsg');
+        
+        if (input.value === CORRECT_PASSWORD) {
+            // Перенаправляем на калькулятор
+            window.location.href = 'app.html';
+        } else {
+            error.style.display = 'block';
+            input.value = '';
+            input.focus();
+        }
+    });
+
+    document.getElementById('passwordInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('loginBtn').click();
+        }
+    });
+</script>
+</body>
+</html>
