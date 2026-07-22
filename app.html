@@ -162,6 +162,25 @@
             margin-bottom: 18px;
         }
 
+        .share-btn {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 0.95rem;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 20px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .share-btn:hover {
+            background: rgba(75, 83, 32, 0.1);
+        }
+
         .form-grid {
             display: flex;
             flex-direction: column;
@@ -259,7 +278,7 @@
             transition: 0.2s;
         }
 
-        input:checked + .slider { background-color: var(--orange); }
+        input:checked + .slider { background-color: #00BFFF; }
         input:checked + .slider:before { transform: translateX(24px); }
 
         .charge-ranges {
@@ -438,7 +457,7 @@
         .modal-content {
             background: white;
             max-width: 90%;
-            width: 380px;
+            width: 400px;
             border-radius: 28px;
             padding: 24px;
             position: relative;
@@ -455,6 +474,18 @@
             border-bottom: 1px solid #eee;
             padding: 6px 0;
         }
+        .modal-detail .history-entry {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 10px 0;
+            border-left: 4px solid var(--secondary);
+        }
+        .modal-detail .history-entry p {
+            border-bottom: none;
+            padding: 3px 0;
+            margin: 3px 0;
+        }
         .close-modal {
             margin-top: 16px;
             background: var(--secondary);
@@ -465,9 +496,25 @@
             width: 100%;
             cursor: pointer;
         }
+
+        #qr-code-container {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        #qr-link-display {
+            font-size: 0.7rem;
+            word-break: break-all;
+            color: #555;
+            background: #f1f3f5;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -586,9 +633,9 @@
 
         <div class="history-card">
             <div class="section-title">
-                <i class="fas fa-history"></i> История 
+                <i class="fas fa-history"></i> История
                 <span class="badge" id="history-count">0</span>
-                <button id="share-history-btn" style="margin-left: auto; background: #4a6b2a; color: white; border: none; padding: 6px 14px; border-radius: 40px; font-size: 0.8rem; cursor: pointer;">
+                <button class="share-btn" id="share-history-btn">
                     <i class="fas fa-share-alt"></i> Поделиться
                 </button>
             </div>
@@ -616,16 +663,25 @@
     </div>
 </div>
 
+<div id="qr-modal" class="modal">
+    <div class="modal-content" style="max-width:420px; text-align:center;">
+        <h3><i class="fas fa-qrcode"></i> QR-код для истории</h3>
+        <div id="qr-code-container"></div>
+        <p style="font-size:0.9rem; color:#555;">Ссылка действительна <strong>24 часа</strong></p>
+        <p id="qr-link-display" style="font-size:0.7rem; word-break:break-all; background:#f1f3f5; padding:8px; border-radius:8px; margin-top:8px;"></p>
+        <button class="close-modal" onclick="closeQRModal()">Закрыть</button>
+    </div>
+</div>
+
 <script>
     (function() {
-        // ==================== ВЕРСИЯ ПРИЛОЖЕНИЯ ====================
-        const APP_VERSION = '8.7.2';
-        // ===========================================================
-        
+        const APP_VERSION = '8.7.4';
+
         // ==================== ТАБЛИЦЫ ОРУДИЙ ====================
+        // ⚠️ ЗАПОЛНИТЕ ЭТИ ДАННЫЕ САМОСТОЯТЕЛЬНО ⚠️
         const mortarData = {
-            '2S19': { name: "2С19 Мста-С", hasRedpoly: true, maxCharge: 6, minCharge: 0, step: 1, 
-            ranges: [
+            '219': { name: "2С19 Мста-С", haRedpoly: true, maxCharge: 6, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "1700-2400 м", min: 1700, max: 2400 },
                     { charge: 1, range: "2300-3250 м", min: 2300, max: 3250 },
                     { charge: 2, range: "3100-4350 м", min: 3100, max: 4350 },
@@ -833,8 +889,8 @@
                 ]
                 }
             },
-            '2S3M1': { name: "2С3М1 Акация", hasRedpoly: false, maxCharge: 6, minCharge: 0, step: 1, 
-            ranges: [
+            '23M1': { name: "2С3М1 Акация", haRedpoly: fale, maxCharge: 6, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "2100-2850 м", min: 2100, max: 2850 },
                     { charge: 1, range: "2850-3850 м", min: 2850, max: 3850 },
                     { charge: 2, range: "3800-5200 м", min: 3800, max: 5200 },
@@ -1042,8 +1098,8 @@
                 ]
                 } 
             },
-            '2S1': { name: "2С1 Гвоздика", hasRedpoly: false, maxCharge: 5, minCharge: 0, step: 1, 
-            ranges: [
+            '21': { name: "2С1 Гвоздика", haRedpoly: fale, maxCharge: 5, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "1950-3250 м", min: 1950, max: 3250 },
                     { charge: 1, range: "2950-4950 м", min: 2950, max: 4950 },
                     { charge: 2, range: "4400-7300 м", min: 4400, max: 7300 },
@@ -1296,8 +1352,8 @@
                 ]
                 } 
         },
-            'D30': { name: "Д-30", hasRedpoly: false, maxCharge: 5, minCharge: 0, step: 1, 
-            ranges: [
+            'D30': { name: "Д-30", haRedpoly: fale, maxCharge: 5, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "1950-3250 м", min: 1950, max: 3250 },
                     { charge: 1, range: "2950-4950 м", min: 2950, max: 4950 },
                     { charge: 2, range: "4400-7300 м", min: 4400, max: 7300 },
@@ -1550,8 +1606,8 @@
                 ]
                 }
         },
-            '2B11': { name: "2Б11", hasRedpoly: false, maxCharge: 4, minCharge: 0, step: 1, 
-            ranges: [
+            '2B11': { name: "2Б11", haRedpoly: fale, maxCharge: 4, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "650-1300 м", min: 650, max: 1300 },
                     { charge: 1, range: "1200-2500 м", min: 1200, max: 2500 },
                     { charge: 2, range: "1750-3750 м", min: 1750, max: 3750 },
@@ -1581,8 +1637,8 @@
                     4:[[3900,1350,1.7,0.4,56.4],[4000,1343,1.8,0.4,56.3],[4100,1336,1.8,0.4,56.2],[4200,1329,1.9,0.4,56.1],[4300,1322,2.0,0.4,56.0],[4400,1315,2.1,0.4,55.9],[4500,1307,2.1,0.4,55.7],[4600,1300,2.2,0.4,55.6],[4700,1293,2.3,0.4,55.5],[4800,1285,2.4,0.4,55.4],[4900,1278,2.5,0.4,55.2],[5000,1270,2.5,0.4,55.1],[5100,1262,2.6,0.4,54.8],[5200,1254,2.7,0.4,54.7],[5300,1246,2.8,0.4,54.6],[5400,1238,3.0,0.4,54.5],[5500,1230,3.1,0.4,54.3],[5600,1222,3.2,0.4,54.2],[5700,1213,3.3,0.4,54.0],[5800,1205,3.4,0.5,53.8],[5900,1196,3.6,0.5,53.6],[6000,1187,3.7,0.5,53.4],[6100,1178,3.9,0.5,53.2],[6200,1169,4.1,0.5,52.9],[6300,1160,4.3,0.5,52.8],[6400,1150,4.5,0.5,52.5],[6500,1140,4.7,0.5,52.3],[6600,1130,4.9,0.5,52.1],[6700,1120,5.2,0.5,51.8],[6800,1109,5.5,0.5,51.5],[6900,1099,5.8,0.5,51.2],[7000,1087,6.1,0.6,50.9],[7100,1076,6.5,0.6,50.6],[7200,1063,7.0,0.6,50.2],[7300,1051,7.5,0.6,49.9],[7400,1037,8.1,0.6,49.5],[7500,1023,8.8,0.7,49.1],[7600,1008,9.7,0.7,48.6],[7700,992,10.7,0.8,48.1],[7800,975,12.1,0.8,47.5],[7900,955,13.9,0.9,46.9],[8000,933,16.5,1.0,46.1],[8100,907,20.7,1.2,45.2],[8200,872,29.4,1.5,43.9]]
                 }
         },
-            '2B14': { name: "2Б14", hasRedpoly: false, maxCharge: 2, minCharge: 0, step: 1, 
-            ranges: [
+            '2B14': { name: "2Б14", haRedpoly: fale, maxCharge: 2, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "100-550 м", min: 100, max: 550 },
                     { charge: 1, range: "400-2200 м", min: 400, max: 2200 },
                     { charge: 2, range: "800-4500 м", min: 800, max: 4500 }
@@ -1718,8 +1774,8 @@
                 ]
                 }
         },
-            '2B26': { name: "2Б26 Град-К", hasRedpoly: false, maxCharge: 24, minCharge: 0, step: 2, 
-            ranges: [
+            '2B26': { name: "2Б26 Град-К", haRedpoly: fale, maxCharge: 24, minCharge: 0, tep: 2, 
+            range: [
                     { charge: 0, range: "1100–1400 м", min: 1100, max: 1400 },
                     { charge: 2, range: "1400–1800 м", min: 1400, max: 1800 },
                     { charge: 4, range: "1850–2300 м", min: 1850, max: 2300 },
@@ -2043,8 +2099,8 @@
                 ]
                 }
         },
-            'Hilux': { name: "Hilux (Podnos)", hasRedpoly: false, maxCharge: 2, minCharge: 0, step: 1, 
-            ranges: [
+            'Hilux': { name: "Hilux (Podno)", haRedpoly: fale, maxCharge: 2, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "50-450 м", min: 50, max: 450 },
                     { charge: 1, range: "150-1950 м", min: 150, max: 1950 },
                     { charge: 2, range: "300-4050 м", min: 300, max: 4050 }
@@ -2182,8 +2238,8 @@
         },
         
             // ==================== НОВОЕ ОРУДИЕ: 9К58 Торнадо-С (МОРТИРНАЯ) ====================
-            'TornadoS': { name: "9К58 Торнадо-С", hasRedpoly: false, maxCharge: 6, minCharge: 0, step: 1, 
-            ranges: [
+            'Tornado': { name: "9К58 Торнадо-С", haRedpoly: fale, maxCharge: 6, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "5400-5600 м", min: 5400, max: 5600 },
                     { charge: 1, range: "6900-7300 м", min: 6900, max: 7300 },
                     { charge: 2, range: "8900-9300 м", min: 8900, max: 9300 },
@@ -2269,11 +2325,12 @@
                 ]
                 }
             }
+            // ВАШИ ДАННЫЕ ДЛЯ МОРТИРНОЙ СТРЕЛЬБЫ
         };
-        
-        const flatData = {
-            '2S19': { name: "2С19 Мста-С", hasRedpoly: false, maxCharge: 6, minCharge: 0, step: 1, 
-            ranges: [
+
+        cont flatData = {
+            '219': { name: "2С19 Мста-С", haRedpoly: fale, maxCharge: 6, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "250-2400 м", min: 250, max: 2400 },
                     { charge: 1, range: "250-3250 м", min: 250, max: 3250 },
                     { charge: 2, range: "450-4350 м", min: 450, max: 4350 },
@@ -2852,8 +2909,8 @@
                     ]
             }, 
         },
-            '2S3M1': { name: "2С3М1 Акация", hasRedpoly: false, maxCharge: 6, minCharge: 0, step: 1, 
-            ranges: [
+            '23M1': { name: "2С3М1 Акация", haRedpoly: fale, maxCharge: 6, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "200-2850 м", min: 200, max: 2850 },
                     { charge: 1, range: "300-3850 м", min: 300, max: 3850 },
                     { charge: 2, range: "400-5200 м", min: 400, max: 5200 },
@@ -3492,8 +3549,8 @@
 
             } 
         },
-            '2S1': { name: "2С1 Гвоздика", hasRedpoly: false, maxCharge: 5, minCharge: 0, step: 1, 
-            ranges: [
+            '21': { name: "2С1 Гвоздика", haRedpoly: fale, maxCharge: 5, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "250-3250 м", min: 250, max: 3250 },
                     { charge: 1, range: "350-4950 м", min: 350, max: 4950 },
                     { charge: 2, range: "600-7300 м", min: 600, max: 7300 },
@@ -4082,8 +4139,8 @@
                 ]
             } 
         },
-            'D30': { name: "Д-30", hasRedpoly: false, maxCharge: 5, minCharge: 0, step: 1, 
-            ranges: [
+            'D30': { name: "Д-30", haRedpoly: fale, maxCharge: 5, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "250-3250 м", min: 250, max: 3250 },
                     { charge: 1, range: "350-4950 м", min: 350, max: 4950 },
                     { charge: 2, range: "600-7300 м", min: 600, max: 7300 },
@@ -4672,8 +4729,8 @@
         ],
             } 
         },
-            '2B26': { name: "2Б26 Град-К", hasRedpoly: false, maxCharge: 24, minCharge: 0, step: 2, 
-            ranges: [
+            '2B26': { name: "2Б26 Град-К", haRedpoly: fale, maxCharge: 24, minCharge: 0, tep: 2, 
+            range: [
                     { charge: 0, range: "100–1400 м", min: 100, max: 1400 },
                     { charge: 2, range: "150–1800 м", min: 150, max: 1800 },
                     { charge: 4, range: "200–2300 м", min: 200, max: 2300 },
@@ -5844,8 +5901,8 @@
             } 
         },
             // ==================== НОВОЕ ОРУДИЕ: 9К58 Торнадо-С (НАСТИЛЬНАЯ) ====================
-            'TornadoS': { name: "9К58 Торнадо-С", hasRedpoly: false, maxCharge: 7, minCharge: 0, step: 1, 
-            ranges: [
+            'Tornado': { name: "9К58 Торнадо-С", haRedpoly: fale, maxCharge: 7, minCharge: 0, tep: 1, 
+            range: [
                     { charge: 0, range: "400-5600 м", min: 400, max: 5600 },
                     { charge: 1, range: "600-7300 м", min: 600, max: 7300 },
                     { charge: 2, range: "700-9300 м", min: 700, max: 9300 },
@@ -7044,10 +7101,10 @@
                     ]
                 }
             }
-            
-        };
-        // =========================================================
-        
+            // ВАШИ ДАННЫЕ ДЛЯ НАСТИЛЬНОЙ СТРЕЛЬБЫ
+        };   // ← сюда ваши данные для настильной стрельбы
+        // ========================================================
+
         let currentWeapon = '2S19';
         let isFlatTrajectory = false;
         let calculationHistory = [];
@@ -7193,16 +7250,18 @@
             if (!ud) throw new Error('Не удалось определить данные для интерполяции');
 
             let finalElev, flightTime, rangeCorr, heightCorr;
+            const heightDiff = oh - th;
 
             if (ud.exact) {
                 const exactRow = ud.exactMatch;
-                finalElev = exactRow[1];
+                const baseElev = exactRow[1];
                 flightTime = exactRow[4] || 0;
                 
-                const heightDiff = oh - th;
                 const heightCorrRaw = exactRow[2] || 0;
                 heightCorr = (heightDiff / 100) * heightCorrRaw;
-                rangeCorr = finalElev - heightCorr;
+                
+                finalElev = baseElev + heightCorr;
+                rangeCorr = baseElev;
                 
                 return {
                     elevation: Math.round(Math.max(0, Math.min(1620, finalElev))),
@@ -7229,7 +7288,6 @@
             const hCorrLow = low[2] || 0;
             const heightCorrInterp = hCorrUp + ((hCorrLow - hCorrUp) / (low[0] - up[0])) * (dist - up[0]);
             
-            const heightDiff = oh - th;
             const heightCorrectionFinal = (heightDiff / 100) * heightCorrInterp;
             finalElev = elevInterp + heightCorrectionFinal;
             rangeCorr = elevInterp;
@@ -7247,26 +7305,21 @@
         }
         
         function addToHistory(res, type='Элеватор') {
-            const now = new Date();
-            const timestamp = now.toLocaleString('ru-RU', { 
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
-            });
-            
-            calculationHistory.unshift({ 
-                id: Date.now(),
-                timestamp: timestamp,
-                weapon: getCurrentDataSource()?.name || currentWeapon,
-                distance: res.distance,
-                charge: res.charge,
-                elevation: res.elevation,
-                flightTime: res.flightTime,
-                ownHeight: res.ownHeight,
-                targetHeight: res.targetHeight,
-                rangeCorr: res.rangeCorrection,
-                heightCorr: res.heightCorrection,
-                type
-            });
+            const entry = { 
+                id: Date.now(), 
+                weapon: getCurrentDataSource()?.name || currentWeapon, 
+                distance: res.distance, 
+                charge: res.charge, 
+                elevation: res.elevation, 
+                flightTime: res.flightTime, 
+                ownHeight: res.ownHeight, 
+                targetHeight: res.targetHeight, 
+                rangeCorr: res.rangeCorrection, 
+                heightCorr: res.heightCorrection, 
+                type,
+                calculatedAt: new Date().toLocaleString('ru-RU', { hour12: false })
+            };
+            calculationHistory.unshift(entry);
             if (calculationHistory.length > 20) calculationHistory.pop();
             updateHistoryDisplay();
         }
@@ -7290,23 +7343,126 @@
         function showDetailModal(entry) {
             const modal = document.getElementById('detail-modal');
             const container = document.getElementById('modal-detail');
-            container.innerHTML = `
-                <p><strong>Орудие:</strong> ${entry.weapon}</p>
-                <p><strong>Дальность до цели:</strong> ${Math.round(entry.distance)} м</p>
-                <p><strong>Своя высота:</strong> ${entry.ownHeight || 0} м</p>
-                <p><strong>Высота цели:</strong> ${entry.targetHeight || 0} м</p>
-                <p><strong>Поправка на дистанцию:</strong> ${Math.round(entry.rangeCorr || 0)}</p>
-                <p><strong>Поправка на высоту:</strong> ${Math.round(entry.heightCorr || 0)}</p>
-                <p><strong>Полетное время:</strong> ${entry.flightTime || 0} сек</p>
-                <p><strong>Заряд:</strong> ${entry.charge}</p>
-                <p><strong>Элеватор:</strong> ${entry.elevation}</p>
-                <p><strong>Время расчета:</strong> ${entry.timestamp || 'не указано'}</p>
-            `;
+            let html = '';
+            // Если это массив (общая история) — показываем все записи
+            if (Array.isArray(entry)) {
+                html = '<h4>📋 Общая история расчётов</h4><hr>';
+                entry.forEach((e, index) => {
+                    html += `
+                        <div class="history-entry">
+                            <p><strong>#${index+1}</strong> — ${e.weapon || 'Орудие'} (${e.type || 'Элеватор'})</p>
+                            <p>📏 Дальность: ${Math.round(e.distance)} м</p>
+                            <p>🔢 Заряд: ${e.charge}</p>
+                            <p>🎯 Элеватор: ${e.elevation}</p>
+                            <p>⏱ Время полёта: ${e.flightTime || 0} сек</p>
+                            <p>📐 Поправка на дистанцию: ${Math.round(e.rangeCorr || 0)}</p>
+                            <p>📐 Поправка на высоту: ${Math.round(e.heightCorr || 0)}</p>
+                            <p>🕒 Время расчёта: ${e.calculatedAt || '—'}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                // Одна запись
+                html = `
+                    <p><strong>Орудие:</strong> ${entry.weapon}</p>
+                    <p><strong>Дальность до цели:</strong> ${Math.round(entry.distance)} м</p>
+                    <p><strong>Своя высота:</strong> ${entry.ownHeight || 0} м</p>
+                    <p><strong>Высота цели:</strong> ${entry.targetHeight || 0} м</p>
+                    <p><strong>Поправка на дистанцию:</strong> ${Math.round(entry.rangeCorr || 0)}</p>
+                    <p><strong>Поправка на высоту:</strong> ${Math.round(entry.heightCorr || 0)}</p>
+                    <p><strong>Полетное время:</strong> ${entry.flightTime || 0} сек</p>
+                    <p><strong>Заряд:</strong> ${entry.charge}</p>
+                    <p><strong>Элеватор:</strong> ${entry.elevation}</p>
+                    <p><strong>Время расчёта:</strong> ${entry.calculatedAt || '—'}</p>
+                `;
+            }
+            container.innerHTML = html;
             modal.style.display = 'flex';
         }
         
         window.closeModal = function() { document.getElementById('detail-modal').style.display = 'none'; };
+        window.closeQRModal = function() { document.getElementById('qr-modal').style.display = 'none'; };
         
+        // ==================== QR-КОД И ПУБЛИКАЦИЯ ====================
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        window.shareHistory = function() {
+            if (calculationHistory.length === 0) {
+                alert('Нет истории для публикации!');
+                return;
+            }
+            const uuid = generateUUID();
+            const shareData = {
+                history: calculationHistory,
+                timestamp: Date.now(),
+                expiresIn: 24 * 60 * 60 * 1000 // 24 часа
+            };
+            try {
+                localStorage.setItem('shared_' + uuid, JSON.stringify(shareData));
+            } catch(e) {
+                alert('Ошибка сохранения данных. Возможно, история слишком большая.');
+                return;
+            }
+            
+            const url = window.location.href.split('?')[0] + '?shared=' + uuid;
+            document.getElementById('qr-link-display').textContent = url;
+            
+            // Генерация QR
+            const container = document.getElementById('qr-code-container');
+            container.innerHTML = '';
+            try {
+                new QRCode(container, {
+                    text: url,
+                    width: 200,
+                    height: 200,
+                    colorDark: '#1e2b3a',
+                    colorLight: '#ffffff'
+                });
+            } catch(e) {
+                container.innerHTML = '<p style="color:red;">Ошибка генерации QR-кода</p>';
+            }
+            
+            document.getElementById('qr-modal').style.display = 'flex';
+        };
+
+        function loadSharedHistory() {
+            const params = new URLSearchParams(window.location.search);
+            const sharedId = params.get('shared');
+            if (!sharedId) return;
+            
+            const raw = localStorage.getItem('shared_' + sharedId);
+            if (!raw) {
+                alert('Ссылка недействительна или срок её действия истёк.');
+                // Убираем параметр из URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(raw);
+                if (Date.now() - data.timestamp > data.expiresIn) {
+                    localStorage.removeItem('shared_' + sharedId);
+                    alert('Срок действия ссылки истёк (24 часа).');
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    return;
+                }
+                
+                // Показываем историю в модальном окне
+                showDetailModal(data.history);
+                // Убираем параметр из URL, чтобы не срабатывало при обновлении
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } catch(e) {
+                alert('Ошибка загрузки данных.');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+        // ============================================================
+
         function updateUIForTrajectory() {
             const toggle = document.getElementById('trajectory-toggle');
             const labelSpan = document.getElementById('trajectory-label');
@@ -7402,7 +7558,7 @@
                 document.getElementById('redpoly-charge').innerText = res.charge;
                 document.getElementById('results-redpoly').classList.add('active');
                 document.getElementById('results-mortar').classList.remove('active');
-                addToHistory({...res, elevation: 'тумбл.'+closest.t, type: 'Краснополь'}, 'Краснополь');
+                addToHistory({...res, elevation: 'тумбл.'+closest.t}, 'Краснополь');
             } catch(e) { alert(e.message); }
         });
         
@@ -7433,168 +7589,47 @@
             } 
         });
         
+        document.getElementById('share-history-btn').addEventListener('click', window.shareHistory);
+        
         document.querySelectorAll('.weapon-item').forEach(it=>it.addEventListener('click',()=>{ selectWeapon(it.getAttribute('data-weapon')); document.getElementById('weapon-list').classList.remove('show'); }));
         document.getElementById('weapon-btn').addEventListener('click',(e)=>{ e.stopPropagation(); document.getElementById('weapon-list').classList.toggle('show'); });
         document.addEventListener('click',()=>{ document.getElementById('weapon-list').classList.remove('show'); });
         
-        // ==================== SHARE VIA GIST ====================
-        const GITHUB_TOKEN = 'ghp_NJQpIIRv7bxitvhZgkD4ST' + '20g4JtRr1AgNF5';
-
-        async function shareHistoryViaGist() {
-            if (calculationHistory.length === 0) {
-                alert('📭 Нет расчётов для отправки!');
-                return;
-            }
-
-            try {
-                const shareData = {
-                    version: APP_VERSION,
-                    timestamp: new Date().toISOString(),
-                    history: calculationHistory
-                };
-
-                const response = await fetch('https://api.github.com/gists', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        description: `История расчётов от ${new Date().toLocaleString('ru-RU')}`,
-                        public: false,
-                        files: {
-                            'history.json': {
-                                content: JSON.stringify(shareData, null, 2)
-                            }
-                        }
-                    })
-                });
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'Ошибка создания Gist');
-                }
-
-                const gist = await response.json();
-                const gistId = gist.id;
-                const shareUrl = `https://chanatri1-stack.github.io/artball-calculator/view.html?id=${gistId}`;
-
-                showQRModal(shareUrl, gistId);
-
-            } catch (error) {
-                alert('❌ Ошибка: ' + error.message);
-                console.error(error);
-            }
-        }
-
-        function showQRModal(shareUrl, gistId) {
-            const overlay = document.createElement('div');
-            overlay.style.cssText = `
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center;
-                z-index: 9999; padding: 20px;
-            `;
-
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                background: #1e2b3a; border-radius: 28px; padding: 30px 24px 24px;
-                max-width: 400px; width: 100%; text-align: center;
-                border: 2px solid #4a6b2a; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-                max-height: 90vh; overflow-y: auto;
-            `;
-
-            modal.innerHTML = `
-                <h3 style="color: #e9c46a; margin-bottom: 12px; font-size: 1.3rem;">📱 QR-код для отправки</h3>
-                <p style="color: #b0c4de; font-size: 0.85rem; margin-bottom: 16px;">
-                    Отсканируйте код, чтобы открыть историю расчётов<br>
-                    <span style="color: #6a7a4a; font-size: 0.75rem;">ID: ${gistId}</span>
-                </p>
-                <div id="qr-container" style="background: white; padding: 16px; border-radius: 16px; display: inline-block; margin: 0 auto;"></div>
-                <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button id="copy-link-btn" style="flex:1; padding: 12px; border: none; border-radius: 40px; background: #4a6b2a; color: white; font-weight: 600; cursor: pointer;">📋 Копировать ссылку</button>
-                    <button id="close-qr-btn" style="flex:1; padding: 12px; border: none; border-radius: 40px; background: #c44536; color: white; font-weight: 600; cursor: pointer;">Закрыть</button>
-                </div>
-                <div style="margin-top: 12px; color: #6a7a4a; font-size: 0.7rem;">
-                    Ссылка активна: ${new Date(Date.now() + 24*60*60*1000).toLocaleString('ru-RU')}
-                </div>
-            `;
-
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
-
-            const qrContainer = document.getElementById('qr-container');
-            if (typeof QRCode !== 'undefined') {
-                new QRCode(qrContainer, {
-                    text: shareUrl,
-                    width: 200,
-                    height: 200,
-                    colorDark: "#1e2b3a",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            } else {
-                qrContainer.innerHTML = `<a href="${shareUrl}" target="_blank" style="color: #4a6b2a;">${shareUrl}</a>`;
-            }
-
-            document.getElementById('copy-link-btn').addEventListener('click', () => {
-                navigator.clipboard.writeText(shareUrl).then(() => {
-                    alert('✅ Ссылка скопирована!');
-                }).catch(() => {
-                    const input = document.createElement('input');
-                    input.value = shareUrl;
-                    document.body.appendChild(input);
-                    input.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(input);
-                    alert('✅ Ссылка скопирована!');
-                });
-            });
-
-            document.getElementById('close-qr-btn').addEventListener('click', () => {
-                document.body.removeChild(overlay);
-            });
-            
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) document.body.removeChild(overlay);
-            });
-        }
-
-        document.getElementById('share-history-btn').addEventListener('click', shareHistoryViaGist);
-        // ========================================================
-
-        // ==================== АВТООБНОВЛЕНИЕ ====================
-        async function checkForUpdates() {
-            try {
-                const response = await fetch('https://raw.githubusercontent.com/chanatri1-stack/artball-calculator/main/version.json?t=' + Date.now());
-                const data = await response.json();
-                if (data.version && data.version !== APP_VERSION) {
-                    if (confirm('🔄 Доступна новая версия ' + data.version + '!\n\nОбновить сейчас?')) {
-                        const htmlResponse = await fetch(data.url + '?t=' + Date.now());
-                        const newHTML = await htmlResponse.text();
-                        localStorage.setItem('cachedApp', newHTML);
-                        localStorage.setItem('appVersion', data.version);
-                        alert('✅ Обновление загружено! Перезапустите приложение.');
-                        location.reload();
-                    }
-                }
-            } catch(e) { console.log('Ошибка:', e); }
-        }
-
-        const cached = localStorage.getItem('cachedApp');
-        if (cached) {
-            document.open();
-            document.write(cached);
-            document.close();
-            setTimeout(checkForUpdates, 5000);
-        } else {
-            setTimeout(checkForUpdates, 3000);
-        }
-        // ========================================================
-
+        // Загружаем общую историю, если есть параметр в URL
+        loadSharedHistory();
+        
         selectWeapon('2S19');
         validateDistanceInput();
     })();
+
+    // ==================== АВТООБНОВЛЕНИЕ ====================
+    async function checkForUpdates() {
+        try {
+            const response = await fetch('https://raw.githubusercontent.com/chanatri1-stack/artball-calculator/main/version.json?t=' + Date.now());
+            const data = await response.json();
+            if (data.version && data.version !== APP_VERSION) {
+                if (confirm('🔄 Доступна новая версия ' + data.version + '!\n\nОбновить сейчас?')) {
+                    const htmlResponse = await fetch(data.url + '?t=' + Date.now());
+                    const newHTML = await htmlResponse.text();
+                    localStorage.setItem('cachedApp', newHTML);
+                    localStorage.setItem('appVersion', data.version);
+                    alert('✅ Обновление загружено! Перезапустите приложение.');
+                    location.reload();
+                }
+            }
+        } catch(e) { console.log('Ошибка:', e); }
+    }
+
+    const cached = localStorage.getItem('cachedApp');
+    if (cached) {
+        document.open();
+        document.write(cached);
+        document.close();
+        setTimeout(checkForUpdates, 5000);
+    } else {
+        setTimeout(checkForUpdates, 3000);
+    }
+    // ========================================================
 </script>
 </body>
 </html>
