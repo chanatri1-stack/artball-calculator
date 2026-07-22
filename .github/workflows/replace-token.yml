@@ -1,0 +1,25 @@
+name: Replace Token in app.html
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app.html'
+
+jobs:
+  replace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Replace placeholder with secret token
+        run: |
+          sed -i 's/GITHUB_TOKEN_PLACEHOLDER/${{ secrets.GITHUB_TOKEN }}/g' app.html
+      
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app.html
+          git commit -m "🔐 Replace token placeholder" || echo "No changes to commit"
+          git push
