@@ -11,7 +11,7 @@
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            background: #0d1b2a; 
+            background: #4B5320;  /* Олива */
             font-family: 'Segoe UI', sans-serif;
         }
         .container {
@@ -19,64 +19,108 @@
             padding: 20px;
         }
         h1 {
-            color: white;
-            font-size: 1.8rem;
+            color: #e8e0c8;  /* Светло-песочный текст */
+            font-size: 2rem;
             margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        /* Иконка-эмблема (опционально) */
+        .emblem {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
         }
         .password-box {
-            background: #1e2b3a;
+            background: #2d3315;  /* Тёмная олива */
             padding: 30px 20px;
             border-radius: 30px;
-            border: 2px solid #2c7da0;
+            border: 2px solid #4a6b2a;  /* Светлая олива */
             max-width: 320px;
             margin: 0 auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.7);
         }
         input {
             width: 100%;
             padding: 14px;
             border-radius: 30px;
-            border: 2px solid #2c7da0;
-            background: #0d1b2a;
-            color: white;
+            border: 2px solid #4a6b2a;
+            background: #1a2e1a;
+            color: #e8e0c8;
             font-size: 1.2rem;
             text-align: center;
             box-sizing: border-box;
             outline: none;
+            font-weight: 500;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #7A8B3D;
+        }
+        input::placeholder {
+            color: #6a7a4a;
         }
         button {
             margin-top: 16px;
             padding: 14px 40px;
             border: none;
             border-radius: 30px;
-            background: #2c7da0;
-            color: white;
+            background: #4a6b2a;  /* Светлая олива */
+            color: #e8e0c8;
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             width: 100%;
+            letter-spacing: 1px;
+            transition: background 0.3s, transform 0.1s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+        }
+        button:hover {
+            background: #5a7b3a;
+        }
+        button:active {
+            transform: scale(0.96);
         }
         .error {
-            color: #c44536;
+            color: #c44536;  /* Красный (военный) */
             margin-top: 10px;
             display: none;
             font-size: 0.9rem;
+            font-weight: 600;
         }
         .version {
-            color: #6c757d;
+            color: #8a9a6a;
             font-size: 0.7rem;
             margin-top: 20px;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+        /* Дополнительная военная черта */
+        .military-line {
+            width: 60px;
+            height: 3px;
+            background: #4a6b2a;
+            margin: 8px auto 0;
+            border-radius: 10px;
+        }
+        /* Убираем "Made with AppMint" если он есть */
+        .appmint-footer {
+            display: none;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🔐 Арт. калькулятор</h1>
+    <span class="emblem">⚔️</span>  <!-- Иконка (можно убрать) -->
+    <h1>Арт. калькулятор</h1>
     <div class="password-box">
         <input type="password" id="passwordInput" placeholder="Введите пароль">
         <button id="loginBtn">Войти</button>
         <div class="error" id="errorMsg">❌ Неверный пароль</div>
     </div>
-    <div class="version">Версия 8.3.0</div>
+    <div class="version">Версия 8.4.0</div>
+    <div class="military-line"></div>
 </div>
 
 <script>
@@ -87,7 +131,6 @@
         const error = document.getElementById('errorMsg');
         
         if (input.value === CORRECT_PASSWORD) {
-            // Перенаправляем на калькулятор
             window.location.href = 'app.html';
         } else {
             error.style.display = 'block';
