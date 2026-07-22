@@ -611,9 +611,10 @@
 
 <script>
     (function() {
-      const APP_VERSION = '8.4.0';
-        // ==================== ТАБЛИЦЫ СУЩЕСТВУЮЩИХ ОРУДИЙ ====================
-        // (сохранены в том же виде, что и ранее)
+        const APP_VERSION = '8.5.0';
+
+        // ==================== ТАБЛИЦЫ ОРУДИЙ ====================
+        // ОСТАВЛЕНО ПУСТЫМ — ЗАПОЛНИТЕ САМОСТОЯТЕЛЬНО
         const mortarData = {
             '2S19': { name: "2С19 Мста-С", hasRedpoly: true, maxCharge: 6, minCharge: 0, step: 1, 
             ranges: [
@@ -2260,8 +2261,9 @@
                 ]
                 }
             }
+            // ВАШИ ДАННЫЕ ДЛЯ МОРТИРНОЙ СТРЕЛЬБЫ
         };
-        
+
         const flatData = {
             '2S19': { name: "2С19 Мста-С", hasRedpoly: false, maxCharge: 6, minCharge: 0, step: 1, 
             ranges: [
@@ -7035,9 +7037,10 @@
                     ]
                 }
             }
+            // ВАШИ ДАННЫЕ ДЛЯ НАСТИЛЬНОЙ СТРЕЛЬБЫ
         };
-        // ====================================================================
-        
+        // ========================================================
+
         let currentWeapon = '2S19';
         let isFlatTrajectory = false;
         let calculationHistory = [];
@@ -7183,16 +7186,20 @@
             if (!ud) throw new Error('Не удалось определить данные для интерполяции');
 
             let finalElev, flightTime, rangeCorr, heightCorr;
+            const heightDiff = oh - th;
 
             if (ud.exact) {
                 const exactRow = ud.exactMatch;
-                finalElev = exactRow[1];
+                const baseElev = exactRow[1];
                 flightTime = exactRow[4] || 0;
                 
-                const heightDiff = oh - th;
                 const heightCorrRaw = exactRow[2] || 0;
                 heightCorr = (heightDiff / 100) * heightCorrRaw;
-                rangeCorr = finalElev - heightCorr;
+                
+                // ========== ИСПРАВЛЕНИЕ: применяем поправку к элеватору ==========
+                finalElev = baseElev + heightCorr;
+                rangeCorr = baseElev; // базовая поправка без учета высоты
+                // =================================================================
                 
                 return {
                     elevation: Math.round(Math.max(0, Math.min(1620, finalElev))),
@@ -7206,6 +7213,7 @@
                 };
             }
             
+            // Интерполяция (было и осталось без изменений)
             const up = ud.upper;
             const low = ud.lower;
             
@@ -7219,7 +7227,6 @@
             const hCorrLow = low[2] || 0;
             const heightCorrInterp = hCorrUp + ((hCorrLow - hCorrUp) / (low[0] - up[0])) * (dist - up[0]);
             
-            const heightDiff = oh - th;
             const heightCorrectionFinal = (heightDiff / 100) * heightCorrInterp;
             finalElev = elevInterp + heightCorrectionFinal;
             rangeCorr = elevInterp;
@@ -7422,34 +7429,35 @@
         selectWeapon('2S19');
         validateDistanceInput();
     })();
-    // ==================== АВТООБНОВЛЕНИЕ ====================
-async function checkForUpdates() {
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/chanatri1-stack/artball-calculator/main/version.json?t=' + Date.now());
-        const data = await response.json();
-        if (data.version && data.version !== APP_VERSION) {
-            if (confirm('🔄 Доступна новая версия ' + data.version + '!\n\nОбновить сейчас?')) {
-                const htmlResponse = await fetch(data.url + '?t=' + Date.now());
-                const newHTML = await htmlResponse.text();
-                localStorage.setItem('cachedApp', newHTML);
-                localStorage.setItem('appVersion', data.version);
-                alert('✅ Обновление загружено! Перезапустите приложение.');
-                location.reload();
-            }
-        }
-    } catch(e) { console.log('Ошибка:', e); }
-}
 
-const cached = localStorage.getItem('cachedApp');
-if (cached) {
-    document.open();
-    document.write(cached);
-    document.close();
-    setTimeout(checkForUpdates, 5000);
-} else {
-    setTimeout(checkForUpdates, 3000);
-}
-// ========================================================
+    // ==================== АВТООБНОВЛЕНИЕ ====================
+    async function checkForUpdates() {
+        try {
+            const response = await fetch('https://raw.githubusercontent.com/chanatri1-stack/artball-calculator/main/version.json?t=' + Date.now());
+            const data = await response.json();
+            if (data.version && data.version !== APP_VERSION) {
+                if (confirm('🔄 Доступна новая версия ' + data.version + '!\n\nОбновить сейчас?')) {
+                    const htmlResponse = await fetch(data.url + '?t=' + Date.now());
+                    const newHTML = await htmlResponse.text();
+                    localStorage.setItem('cachedApp', newHTML);
+                    localStorage.setItem('appVersion', data.version);
+                    alert('✅ Обновление загружено! Перезапустите приложение.');
+                    location.reload();
+                }
+            }
+        } catch(e) { console.log('Ошибка:', e); }
+    }
+
+    const cached = localStorage.getItem('cachedApp');
+    if (cached) {
+        document.open();
+        document.write(cached);
+        document.close();
+        setTimeout(checkForUpdates, 5000);
+    } else {
+        setTimeout(checkForUpdates, 3000);
+    }
+    // ========================================================
 </script>
 </body>
 </html>
