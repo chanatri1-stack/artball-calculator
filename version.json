@@ -1,5 +1,5 @@
 {
-  "version": "8.8.0",
+  "version": "8.8.1",
   "url": "https://raw.githubusercontent.com/chanatri1-stack/artball-calculator/main/app.html",
-  "changelog": "Добавлена функция поделиться результатами расчетов. Исправлена функция автообновления. Добавлена функция чистки кэша"
+  "changelog": " изменен внешний вид калькулятора "
 }
