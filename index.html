@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Мета-теги для отключения кэширования -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Арт. калькулятор</title>
     <style>
         body { 
@@ -26,7 +30,6 @@
             letter-spacing: 2px;
             font-weight: 600;
         }
-        /* Иконка-эмблема (опционально) */
         .emblem {
             font-size: 3rem;
             margin-bottom: 10px;
@@ -96,7 +99,6 @@
             letter-spacing: 1px;
             opacity: 0.8;
         }
-        /* Дополнительная военная черта */
         .military-line {
             width: 60px;
             height: 3px;
@@ -104,7 +106,6 @@
             margin: 8px auto 0;
             border-radius: 10px;
         }
-        /* Убираем "Made with AppMint" если он есть */
         .appmint-footer {
             display: none;
         }
@@ -112,18 +113,34 @@
 </head>
 <body>
 <div class="container">
-    <span class="emblem">⚔️</span>  <!-- Иконка (можно убрать) -->
+    <span class="emblem">⚔️</span>
     <h1>Арт. калькулятор</h1>
     <div class="password-box">
         <input type="password" id="passwordInput" placeholder="Введите пароль">
         <button id="loginBtn">Войти</button>
         <div class="error" id="errorMsg">❌ Неверный пароль</div>
     </div>
-    <div class="version">Версия 8.8.3</div>
+    <div class="version">Версия 8.8.4</div>
     <div class="military-line"></div>
 </div>
 
 <script>
+    // === АВТОМАТИЧЕСКАЯ ОЧИСТКА КЭША И ОБНОВЛЕНИЕ ===
+    (function forceRefresh() {
+        // Проверяем, был ли уже выполнен "чистый" запуск в этой сессии
+        if (!sessionStorage.getItem('refreshed')) {
+            // Устанавливаем флаг, чтобы не было бесконечного цикла
+            sessionStorage.setItem('refreshed', 'true');
+            
+            // Принудительная перезагрузка с добавлением случайного параметра,
+            // чтобы гарантированно обойти кэш
+            const url = new URL(window.location.href);
+            url.searchParams.set('_t', Date.now());
+            window.location.replace(url.toString());
+        }
+    })();
+
+    // Остальной код
     const CORRECT_PASSWORD = '1488';
 
     document.getElementById('loginBtn').addEventListener('click', function() {
