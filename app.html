@@ -513,7 +513,6 @@
             margin-top: 8px;
         }
 
-        /* Стили для истории в деталях */
         .history-detail-item {
             background: #f8f9fa;
             border-radius: 12px;
@@ -533,11 +532,75 @@
             border-top: 2px dashed #dee2e6;
             margin: 16px 0;
         }
+
+        /* Стиль для сообщения о перезагрузке */
+        .pull-to-refresh-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 16px 20px;
+            text-align: center;
+            z-index: 9999;
+            font-size: 1rem;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid var(--secondary);
+        }
+        .pull-to-refresh-message.show {
+            transform: translateY(0);
+        }
+        .pull-to-refresh-message .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .pull-to-refresh-message .btn-group button {
+            padding: 8px 24px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .pull-to-refresh-message .btn-confirm {
+            background: var(--danger);
+            color: white;
+        }
+        .pull-to-refresh-message .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* Версия внизу */
+        .version-info {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.7rem;
+            padding: 8px 0 4px 0;
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+
+<!-- Сообщение для pull-to-refresh -->
+<div class="pull-to-refresh-message" id="pullRefreshMessage">
+    <i class="fas fa-sync-alt" style="margin-right:8px;"></i> Перезагрузить страницу?
+    <div style="font-size:0.8rem; opacity:0.7; margin-top:4px;">История расчётов будет удалена</div>
+    <div class="btn-group">
+        <button class="btn-confirm" id="confirmReload">Да, перезагрузить</button>
+        <button class="btn-cancel" id="cancelReload">Отмена</button>
+    </div>
+</div>
+
 <div class="container">
     <header>
         <h1><i class="fas fa-calculator"></i> Артиллерийский Баллистический калькулятор</h1>
@@ -673,6 +736,10 @@
             </div>
         </div>
     </div>
+    
+    <!-- Версия приложения -->
+    <div class="version-info" id="appVersionDisplay">Версия: 8.8.5</div>
+    
     <footer>Создан командиром арт. дивизиона Романовым А. В. / моб. версия</footer>
 </div>
 
@@ -697,7 +764,6 @@
 <script>
   // ==================== АВТОМАТИЧЕСКАЯ ОЧИСТКА КЭША ПРИ ЗАПУСКЕ ====================
 (function clearCacheOnStart() {
-    // Очищаем кэш браузера (только для этого сайта)
     if ('caches' in window) {
         caches.keys().then(function(names) {
             for (let name of names) {
@@ -706,9 +772,7 @@
         });
     }
     
-    // Очищаем localStorage от временных/устаревших данных
-    // (но НЕ удаляем историю расчётов и shared-данные)
-    const keysToKeep = ['shared_']; // префиксы, которые НЕ удаляем
+    const keysToKeep = ['shared_'];
     const keysToRemove = [];
     
     for (let i = 0; i < localStorage.length; i++) {
@@ -729,7 +793,6 @@
         localStorage.removeItem(key);
     }
     
-    // Очищаем sessionStorage (временные данные)
     try {
         sessionStorage.clear();
     } catch(e) {}
@@ -738,10 +801,10 @@
 })();
 // ========================================================================
     (function() {
-        const APP_VERSION = '8.8.4';
+        const APP_VERSION = '8.8.5';
 
         // ============================================================
-        // ⚠️⚠️⚠️ ТОЛЬКО ЭТИ ДВЕ ПЕРЕМЕННЫЕ ОСТАВЛЕНЫ ПУСТЫМИ ⚠️⚠️⚠️
+        // ⚠️⚠️⚠️ ЭТИ ДВЕ ПЕРЕМЕННЫЕ ОСТАВЛЕНЫ ПУСТЫМИ ⚠️⚠️⚠️
         // ВСЕ ДАННЫЕ ДЛЯ ОРУДИЙ ВСТАВЬТЕ СЮДА САМОСТОЯТЕЛЬНО
         // ============================================================
         const mortarData = {
@@ -7165,8 +7228,11 @@
                     ]
                 }
             }
-        };   // ← СЮДА ДАННЫЕ ДЛЯ НАСТИЛЬНОЙ СТРЕЛЬБЫ
+        };
         // ============================================================
+
+        // Отображаем версию на экране
+        document.getElementById('appVersionDisplay').textContent = 'Версия: ' + APP_VERSION;
 
         let currentWeapon = '2S19';
         let isFlatTrajectory = false;
@@ -7421,7 +7487,6 @@
             const container = document.getElementById('modal-detail');
             let html = '';
 
-            // Если это массив (общая история из QR)
             if (Array.isArray(entry)) {
                 html = '<h4 style="margin-bottom:12px;">📋 Общая история расчётов</h4><hr>';
                 entry.forEach((e, index) => {
@@ -7439,7 +7504,6 @@
                     `;
                 });
             } else {
-                // Одна запись
                 html = `
                     <p><strong>Орудие:</strong> ${entry.weapon}</p>
                     <p><strong>Дальность до цели:</strong> ${Math.round(entry.distance)} м</p>
@@ -7478,7 +7542,7 @@
             const shareData = {
                 history: calculationHistory,
                 timestamp: Date.now(),
-                expiresIn: 24 * 60 * 60 * 1000 // 24 часа
+                expiresIn: 24 * 60 * 60 * 1000
             };
             try {
                 localStorage.setItem('shared_' + uuid, JSON.stringify(shareData));
@@ -7532,7 +7596,6 @@
                     return;
                 }
 
-                // Показываем историю в модальном окне
                 showDetailModal(data.history);
                 window.history.replaceState({}, document.title, window.location.pathname);
             } catch (e) {
@@ -7606,14 +7669,55 @@
             validateDistanceInput();
         }
 
+        // ==================== PULL-TO-REFRESH ====================
+        let pullStartY = 0;
+        let isPulling = false;
+        let pullThreshold = 120;
+
+        document.addEventListener('touchstart', function(e) {
+            if (window.scrollY === 0) {
+                pullStartY = e.touches[0].clientY;
+                isPulling = true;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e) {
+            if (!isPulling || window.scrollY > 0) return;
+            const deltaY = e.touches[0].clientY - pullStartY;
+            if (deltaY > pullThreshold) {
+                isPulling = false;
+                document.getElementById('pullRefreshMessage').classList.add('show');
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', function() {
+            isPulling = false;
+        }, { passive: true });
+
+        // Кнопки в сообщении
+        document.getElementById('confirmReload').addEventListener('click', function() {
+            document.getElementById('pullRefreshMessage').classList.remove('show');
+            location.reload();
+        });
+
+        document.getElementById('cancelReload').addEventListener('click', function() {
+            document.getElementById('pullRefreshMessage').classList.remove('show');
+        });
+
+        // Также для десктопа — скрываем сообщение при клике вне
+        document.addEventListener('click', function(e) {
+            const msg = document.getElementById('pullRefreshMessage');
+            if (msg.classList.contains('show') && !msg.contains(e.target)) {
+                msg.classList.remove('show');
+            }
+        });
+
         // ==================== ИНИЦИАЛИЗАЦИЯ ====================
         document.addEventListener('DOMContentLoaded', function() {
-            // Проверка наличия данных при загрузке
             if (!hasWeaponData()) {
                 document.getElementById('trajectory-status').innerHTML = '⚠️ Заполните данные для орудия в коде (mortarData / flatData)';
             }
 
-            // Автоподбор заряда
             document.getElementById('auto-charge-toggle').addEventListener('change', function() {
                 const isAuto = this.checked;
                 document.getElementById('charge-input-group').style.display = isAuto ? 'none' : 'block';
@@ -7628,7 +7732,6 @@
                 validateDistanceInput();
             });
 
-            // Переключение траектории
             document.getElementById('trajectory-toggle').addEventListener('change', function(e) {
                 isFlatTrajectory = e.target.checked;
                 if (isFlatTrajectory && !flatData[currentWeapon]) {
@@ -7639,7 +7742,6 @@
                 updateUIForTrajectory();
             });
 
-            // Кнопка "Элеватор"
             document.getElementById('calculate-mortar').addEventListener('click', function() {
                 if (!hasWeaponData()) {
                     alert('Нет данных для выбранного орудия! Заполните mortarData или flatData.');
@@ -7668,7 +7770,6 @@
                 }
             });
 
-            // Кнопка "Краснополь"
             document.getElementById('calculate-redpoly').addEventListener('click', function() {
                 if (currentWeapon !== '2S19') {
                     alert('Краснополь доступен только для орудия 2С19 Мста-С');
@@ -7707,7 +7808,6 @@
                 }
             });
 
-            // Сброс
             document.getElementById('reset-calculator').addEventListener('click', function() {
                 document.getElementById('distance').value = '1100';
                 document.getElementById('own-height').value = '0';
@@ -7718,7 +7818,6 @@
                 document.getElementById('results-redpoly').classList.remove('active');
             });
 
-            // Полный перезапуск
             document.getElementById('full-restart').addEventListener('click', function() {
                 if (confirm('Полный перезапуск?')) {
                     calculationHistory = [];
@@ -7736,10 +7835,8 @@
                 }
             });
 
-            // Кнопка "Поделиться"
             document.getElementById('share-history-btn').addEventListener('click', window.shareHistory);
 
-            // Выбор орудия
             document.querySelectorAll('.weapon-item').forEach(function(it) {
                 it.addEventListener('click', function() {
                     selectWeapon(it.getAttribute('data-weapon'));
@@ -7756,27 +7853,21 @@
                 document.getElementById('weapon-list').classList.remove('show');
             });
 
-            // Загрузка общей истории из QR
             loadSharedHistory();
 
-            // Инициализация
             selectWeapon('2S19');
             validateDistanceInput();
         });
 
     })();
-// ==================== АВТООБНОВЛЕНИЕ (ИСПРАВЛЕННОЕ) ====================
+// ==================== АВТООБНОВЛЕНИЕ ====================
 (function() {
-    // Флаг, чтобы окно появлялось только 1 раз за сессию
     let updateChecked = false;
-    let updateShown = false;
     
     async function checkForUpdates() {
-        // Если уже проверяли или уже показывали — выходим
         if (updateChecked) return;
         updateChecked = true;
         
-        // Проверяем, не показывали ли окно в этой сессии
         if (sessionStorage.getItem('update_shown') === 'true') {
             return;
         }
@@ -7785,8 +7876,7 @@
             const response = await fetch('https://raw.githubusercontent.com/chanatri1-stack/artball-calculator/main/version.json?t=' + Date.now());
             const data = await response.json();
             
-            if (data.version && data.version !== APP_VERSION) {
-                // Помечаем, что окно показано
+            if (data.version && data.version !== '8.8.5') {
                 sessionStorage.setItem('update_shown', 'true');
                 
                 if (confirm('🔄 Доступна новая версия ' + data.version + '!\n\nОбновить сейчас?')) {
@@ -7807,24 +7897,19 @@
         }
     }
     
-    // Проверяем, не загружена ли уже новая версия из кэша
     const cached = localStorage.getItem('cachedApp');
     const currentVersion = localStorage.getItem('appVersion');
     
-    if (cached && currentVersion !== APP_VERSION) {
-        // Если есть кэш и это другая версия — загружаем
+    if (cached && currentVersion !== '8.8.5') {
         document.open();
         document.write(cached);
         document.close();
-        // После загрузки кэша проверяем обновления через 5 секунд
         setTimeout(checkForUpdates, 5000);
     } else {
-        // Если нет кэша или версия совпадает — проверяем обновления через 3 секунды
         setTimeout(checkForUpdates, 3000);
     }
 })();
 // ========================================================
- 
 </script>
 </body>
 </html>
