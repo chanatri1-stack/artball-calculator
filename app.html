@@ -738,7 +738,7 @@
     </div>
     
     <!-- Версия приложения -->
-    <div class="version-info" id="appVersionDisplay">Версия: 8.8.5</div>
+    <div class="version-info" id="appVersionDisplay">Версия: 8.8.6</div>
     
     <footer>Создан командиром арт. дивизиона Романовым А. В. / моб. версия</footer>
 </div>
@@ -801,7 +801,7 @@
 })();
 // ========================================================================
     (function() {
-        const APP_VERSION = '8.8.5';
+        const APP_VERSION = '8.8.6';
 
         // ============================================================
         // ⚠️⚠️⚠️ ЭТИ ДВЕ ПЕРЕМЕННЫЕ ОСТАВЛЕНЫ ПУСТЫМИ ⚠️⚠️⚠️
@@ -7861,13 +7861,18 @@
 
     })();
 // ==================== АВТООБНОВЛЕНИЕ ====================
+// ==================== АВТООБНОВЛЕНИЕ (ИСПРАВЛЕННОЕ) ====================
 (function() {
+    // Флаг, чтобы окно появлялось только 1 раз за сессию
     let updateChecked = false;
+    let updateShown = false;
     
     async function checkForUpdates() {
+        // Если уже проверяли или уже показывали — выходим
         if (updateChecked) return;
         updateChecked = true;
         
+        // Проверяем, не показывали ли окно в этой сессии
         if (sessionStorage.getItem('update_shown') === 'true') {
             return;
         }
@@ -7876,7 +7881,8 @@
             const response = await fetch('https://raw.githubusercontent.com/chanatri1-stack/artball-calculator/main/version.json?t=' + Date.now());
             const data = await response.json();
             
-            if (data.version && data.version !== '8.8.5') {
+            if (data.version && data.version !== APP_VERSION) {
+                // Помечаем, что окно показано
                 sessionStorage.setItem('update_shown', 'true');
                 
                 if (confirm('🔄 Доступна новая версия ' + data.version + '!\n\nОбновить сейчас?')) {
@@ -7897,18 +7903,23 @@
         }
     }
     
+    // Проверяем, не загружена ли уже новая версия из кэша
     const cached = localStorage.getItem('cachedApp');
     const currentVersion = localStorage.getItem('appVersion');
     
-    if (cached && currentVersion !== '8.8.5') {
+    if (cached && currentVersion !== APP_VERSION) {
+        // Если есть кэш и это другая версия — загружаем
         document.open();
         document.write(cached);
         document.close();
+        // После загрузки кэша проверяем обновления через 5 секунд
         setTimeout(checkForUpdates, 5000);
     } else {
+        // Если нет кэша или версия совпадает — проверяем обновления через 3 секунды
         setTimeout(checkForUpdates, 3000);
     }
 })();
+// ========================================================
 // ========================================================
 </script>
 </body>
