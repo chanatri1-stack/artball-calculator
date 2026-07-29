@@ -590,7 +590,7 @@
             Войти через Google
         </button>
         <div id="login-error">❌ Доступ запрещен. Вы не в списке разрешенных.</div>
-        <div class="version">Версия 8.8.12</div>
+        <div class="version">Версия 8.8.13</div>
     </div>
 </div>
 
@@ -743,7 +743,7 @@
         </div>
     </div>
     
-    <div class="version-info" id="appVersionDisplay">Версия: 8.8.12</div>
+    <div class="version-info" id="appVersionDisplay">Версия: 8.8.13</div>
     
     <footer>Создан Романовым А. В. / моб. версия</footer>
 </div>
@@ -7216,26 +7216,35 @@ const ALLOWED_EMAILS = [
     // Добавь сюда свои email
 ];
 
-const APP_VERSION = '8.8.12';
+const APP_VERSION = '8.8.13';
 
 // ====================================================================
 // ==================== ФУНКЦИЯ ДЛЯ ОТКРЫТИЯ В БРАУЗЕРЕ ==============
 // ====================================================================
-
 function openInBrowser(url) {
-    // Проверяем, запущено ли приложение как APK (WebView)
-    var isWebView = window.navigator.userAgent.indexOf("wv") !== -1 || 
-                   window.navigator.userAgent.indexOf("WebView") !== -1;
-    
-    if (isWebView) {
-        // В APK — открываем через Chrome Custom Tabs или системный браузер
-        var intentUrl = "intent://" + url.replace("https://", "") + 
-                       "#Intent;scheme=https;package=com.android.chrome;end";
-        window.location.href = intentUrl;
-    } else {
-        // В обычном браузере — просто открываем ссылку
-        window.open(url, "_blank");
+    // 1. Пробуем через Android-интерфейс
+    if (typeof Android !== 'undefined' && typeof Android.googleLogin === 'function') {
+        console.log('🟢 Calling Android.googleLogin()');
+        Android.googleLogin();
+        return true;
     }
+    
+    // 2. Если мы в WebView — пробуем intent
+    if (navigator.userAgent.indexOf("wv") !== -1 || 
+        navigator.userAgent.indexOf("WebView") !== -1) {
+        try {
+            var intentUrl = "intent://" + url.replace("https://", "") + 
+                           "#Intent;scheme=https;package=com.android.chrome;end";
+            window.location.href = intentUrl;
+            return true;
+        } catch(e) {
+            console.log('❌ Intent failed:', e);
+        }
+    }
+    
+    // 3. В обычном браузере
+    window.open(url, "_blank");
+    return true;
 }
 
 // ====================================================================
