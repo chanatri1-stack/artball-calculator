@@ -663,7 +663,7 @@
             data-logo_alignment="left">
         </div>
         <div id="login-error">❌ Доступ запрещен. Вы не в списке разрешенных.</div>
-        <div class="version">Версия 8.8.10</div>
+        <div class="version">Версия 8.8.11</div>
     </div>
 </div>
 
@@ -817,7 +817,7 @@
     </div>
     
     <!-- Версия приложения -->
-    <div class="version-info" id="appVersionDisplay">Версия: 8.8.10</div>
+    <div class="version-info" id="appVersionDisplay">Версия: 8.8.11</div>
     
     <footer>Создан Романовым А. В. / моб. версия</footer>
 </div>
@@ -7297,7 +7297,7 @@ const ALLOWED_EMAILS = [
 // ==================== АВТООБНОВЛЕНИЕ (ПОЛНОСТЬЮ АВТОМАТИЧЕСКОЕ) =====
 // ====================================================================
 
-const APP_VERSION = '8.8.10';
+const APP_VERSION = '8.8.11';
 
 // Функция проверки обновлений
 async function checkForUpdates() {
@@ -8017,6 +8017,23 @@ if (document.getElementById('app-container').style.display !== 'none') {
     initializeApp();
 }
 
+</script>
+<script>
+    // ============================================================
+    // === ПРИНУДИТЕЛЬНОЕ ОТКРЫТИЕ GOOGLE В БРАУЗЕРЕ ===
+    // ============================================================
+    (function() {
+        // Проверяем, что мы в WebView
+        var isWebView = window.navigator.userAgent.indexOf("wv") !== -1 || 
+                       window.navigator.userAgent.indexOf("WebView") !== -1;
+        
+        // Если это WebView И мы на странице Google — перенаправляем в браузер
+        if (isWebView && window.location.href.indexOf("accounts.google.com") !== -1) {
+            var url = window.location.href;
+            // Открываем в Chrome
+            window.location.href = "intent://" + url.replace("https://", "") + "#Intent;scheme=https;package=com.android.chrome;end";
+        }
+    })();
 </script>
 </body>
 </html>
