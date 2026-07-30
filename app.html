@@ -590,7 +590,7 @@
             Войти через Google
         </button>
         <div id="login-error">❌ Доступ запрещен. Вы не в списке разрешенных.</div>
-        <div class="version">Версия 8.8.14</div>
+        <div class="version">Версия 8.8.15</div>
     </div>
 </div>
 
@@ -743,7 +743,7 @@
         </div>
     </div>
     
-    <div class="version-info" id="appVersionDisplay">Версия: 8.8.14</div>
+    <div class="version-info" id="appVersionDisplay">Версия: 8.8.15</div>
     
     <footer>Создан Романовым А. В. / моб. версия</footer>
 </div>
@@ -7000,7 +7000,7 @@ const mortarData = {
                         [10500, 158, -10, -0.0, 18.3],
                         [10600, 159, -10, -0.0, 18.5],
                         [10700, 161, -10, -0.0, 18.6],
-                        [10800, 163, -10, -0.0, 18.8],
+                        [10800, 163, -10, -0.0, 1],
                         [10900, 164, -10, -0.0, 19.0],
                         [11000, 166, -9, -0.0, 19.2],
                         [11100, 167, -9, -0.0, 19.4],
@@ -7216,7 +7216,7 @@ const ALLOWED_EMAILS = [
     // Добавь сюда свои email
 ];
 
-const APP_VERSION = '8.8.14';
+const APP_VERSION = '15';
 
 // ====================================================================
 // ==================== ФУНКЦИЯ ДЛЯ ОТКРЫТИЯ В БРАУЗЕРЕ ==============
@@ -7253,91 +7253,65 @@ function openInBrowser(url) {
 
 // Функция для запуска потока OAuth
 function startGoogleLogin() {
-    // Генерируем случайный state для защиты от CSRF
     const state = Math.random().toString(36).substring(2, 15);
     localStorage.setItem('oauth_state', state);
     
-    // Сохраняем текущий URL для возврата
-    localStorage.setItem('oauth_return_url', window.location.href.split('?')[0]);
-    
-    // Строим URL для OAuth
-    const redirectUri = window.location.href.split('?')[0];
+    // Используем response_type=token вместо id_token
+    const redirectUri = "https://chanatri1-stack.github.io/artball-calculator/app.html";
     const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
         'client_id=' + encodeURIComponent(GOOGLE_CLIENT_ID) +
         '&redirect_uri=' + encodeURIComponent(redirectUri) +
-        '&response_type=id_token' +
+        '&response_type=token' +  // <-- ИЗМЕНИЛИ!
         '&scope=openid%20email%20profile' +
-        '&nonce=' + encodeURIComponent(Math.random().toString(36).substring(2, 15)) +
         '&state=' + encodeURIComponent(state);
     
-    // Открываем в браузере
     openInBrowser(authUrl);
 }
 
 // Обработка возврата из OAuth
 function handleOAuthReturn() {
-    console.log("🔍 handleOAuthReturn вызван!");
-    console.log("🔍 window.location.hash:", window.location.hash);
-    
     const params = new URLSearchParams(window.location.hash.substring(1));
-    const idToken = params.get('id_token');
-    const accessToken = params.get('access_token');  // <-- добавили для отладки
-    const error = params.get('error');              // <-- добавили для отладки
+    const accessToken = params.get('access_token');
+    const tokenType = params.get('token_type');
+    const expiresIn = params.get('expires_in');
     const state = params.get('state');
     const storedState = localStorage.getItem('oauth_state');
     
-    console.log("🔍 idToken:", idToken ? "ЕСТЬ" : "НЕТ");
-    console.log("🔍 accessToken:", accessToken ? "ЕСТЬ" : "НЕТ");
-    console.log("🔍 error:", error);
-    console.log("🔍 state:", state);
-    console.log("🔍 storedState:", storedState);
-    
-    if (error) {
-        document.getElementById('login-error').style.display = 'block';
-        document.getElementById('login-error').textContent = '❌ Ошибка Google: ' + error;
-        return;
-    }
-    
-    if (idToken && state === storedState) {
-        try {
-            // Парсим токен с обработкой ошибок
-            const parts = idToken.split('.');
-            console.log("🔍 Количество частей токена:", parts.length);
-            
-            if (parts.length !== 3) {
-                throw new Error('Некорректный формат ID Token (ожидается 3 части, получено ' + parts.length + ')');
-            }
-            
-            // Декодируем base64url -> base64
-            const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-            const decoded = atob(base64);
-            const payload = JSON.parse(decoded);
-            const userEmail = payload.email;
-            
-            console.log("🔍 Email пользователя:", userEmail);
-            
-            if (ALLOWED_EMAILS.includes(userEmail)) {
-                localStorage.setItem('user_email', userEmail);
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
-                if (typeof initializeApp === 'function') {
-                    initializeApp();
+    if (accessToken && state === storedState) {
+        // Получаем email через Google People API
+        fetch('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + accessToken)
+            .then(response => response.json())
+            .then(data => {
+                const userEmail = data.email;
+                if (ALLOWED_EMAILS.includes(userEmail)) {
+                    localStorage.setItem('user_email', userEmail);
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'block';
+                    if (typeof initializeApp === 'function') {
+                        initializeApp();
+                    }
+                } else {
+                    document.getElementById('login-error').style.display = 'block';
+                    document.getElementById('login-error').textContent = '❌ Доступ запрещен. Email ' + userEmail + ' не в списке разрешенных.';
                 }
-            } else {
+            })
+            .catch(error => {
                 document.getElementById('login-error').style.display = 'block';
-                document.getElementById('login-error').textContent = '❌ Доступ запрещен. Email ' + userEmail + ' не в списке разрешенных.';
-            }
-        } catch (e) {
-            document.getElementById('login-error').style.display = 'block';
-            document.getElementById('login-error').textContent = '❌ Ошибка авторизации: ' + e.message;
-            console.error('❌ Детали ошибки:', e);
-        }
+                document.getElementById('login-error').textContent = '❌ Ошибка получения данных: ' + error.message;
+            });
         
         localStorage.removeItem('oauth_state');
         window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (!idToken) {
-        document.getElementById('login-error').style.display = 'block';
-        document.getElementById('login-error').textContent = '❌ Не получен ID Token от Google. Попробуйте ещё раз.';
+    } else if (!accessToken) {
+        // Проверяем, может быть ошибка
+        const error = params.get('error');
+        if (error) {
+            document.getElementById('login-error').style.display = 'block';
+            document.getElementById('login-error').textContent = '❌ Ошибка Google: ' + error;
+        } else {
+            document.getElementById('login-error').style.display = 'block';
+            document.getElementById('login-error').textContent = '❌ Не получен токен от Google. Попробуйте ещё раз.';
+        }
     }
 }
 // Кнопка входа
