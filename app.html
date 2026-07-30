@@ -600,7 +600,7 @@
             Войти через Google
         </button>
         <div id="login-error">❌ Доступ запрещен. Вы не в списке разрешенных.</div>
-        <div class="version">Версия 8.8.23</div>
+        <div class="version">Версия 8.8.24</div>
     </div>
 </div>
 
@@ -753,7 +753,7 @@
         </div>
     </div>
     
-    <div class="version-info" id="appVersionDisplay">Версия: 23</div>
+    <div class="version-info" id="appVersionDisplay">Версия: 8.8.24</div>
     
     <footer>Создан Романовым А. В. / моб. версия</footer>
 </div>
@@ -7206,6 +7206,7 @@ const mortarData = {
                 }
             }
         };
+
 // ====================================================================
 // ==================== GOOGLE AUTH ===================================
 // ====================================================================
@@ -7222,7 +7223,7 @@ const ALLOWED_EMAILS = [
     'volk.volkevich246@gmail.com'
 ];
 
-const APP_VERSION = '8.8.23';
+const APP_VERSION = '8.8.24';
 
 // ====================================================================
 // ==================== ПОЛУЧЕНИЕ EMAIL ИЗ ANDROID ====================
@@ -7270,9 +7271,6 @@ function setUserEmailFromAndroid(email) {
 // ==================== ПЕРЕОПРЕДЕЛЕНИЕ handleOAuthReturn ============
 // ====================================================================
 
-// Сохраняем оригинальную функцию
-const originalHandleOAuthReturn = window.handleOAuthReturn || function() {};
-
 // Переопределяем для вызова Android-интерфейса
 window.handleOAuthReturn = function() {
     const params = new URLSearchParams(window.location.hash.substring(1));
@@ -7287,23 +7285,35 @@ window.handleOAuthReturn = function() {
     console.log('🔍 state:', state);
     console.log('🔍 storedState:', storedState);
     
+    // Если уже был обработан — выходим
+    if (!storedState) {
+        console.log('⚠️ OAuth уже обработан или state отсутствует');
+        return;
+    }
+    
     if (error) {
         document.getElementById('login-error').style.display = 'block';
         document.getElementById('login-error').textContent = '❌ Ошибка Google: ' + error;
+        localStorage.removeItem('oauth_state');
         return;
     }
     
     if (!accessToken) {
         document.getElementById('login-error').style.display = 'block';
         document.getElementById('login-error').textContent = '❌ Не получен токен от Google. Попробуйте ещё раз.';
+        localStorage.removeItem('oauth_state');
         return;
     }
     
     if (state !== storedState) {
         document.getElementById('login-error').style.display = 'block';
         document.getElementById('login-error').textContent = '❌ Ошибка безопасности. Попробуйте ещё раз.';
+        localStorage.removeItem('oauth_state');
         return;
     }
+    
+    // Удаляем state, чтобы предотвратить повторную обработку
+    localStorage.removeItem('oauth_state');
     
     // Получаем email через Google API
     fetch('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + accessToken)
@@ -7321,26 +7331,28 @@ window.handleOAuthReturn = function() {
                 throw new Error('Не получен email пользователя');
             }
             
-            // ===== ГЛАВНОЕ: ПЕРЕДАЁМ EMAIL В ANDROID =====
+            // ===== ПРОВЕРКА БЕЛОГО СПИСКА =====
+            const isAllowed = ALLOWED_EMAILS.some(email => 
+                email.toLowerCase() === userEmail.toLowerCase()
+            );
+            
+            if (!isAllowed) {
+                document.getElementById('login-error').style.display = 'block';
+                document.getElementById('login-error').textContent = '❌ Доступ запрещен. Email ' + userEmail + ' не в списке разрешенных.';
+                return;
+            }
+            
+            // Если разрешён — передаём в Android
             if (typeof Android !== 'undefined' && typeof Android.setUserEmail === 'function') {
                 console.log('📤 Sending email to Android:', userEmail);
                 Android.setUserEmail(userEmail);
             } else {
-                // Если Android-интерфейс недоступен (например, в обычном браузере)
-                console.log('⚠️ Android.setUserEmail not available, checking locally');
-                const isAllowed = ALLOWED_EMAILS.some(email => 
-                    email.toLowerCase() === userEmail.toLowerCase()
-                );
-                if (isAllowed) {
-                    localStorage.setItem('user_email', userEmail);
-                    document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('app-container').style.display = 'block';
-                    if (typeof initializeApp === 'function') {
-                        initializeApp();
-                    }
-                } else {
-                    document.getElementById('login-error').style.display = 'block';
-                    document.getElementById('login-error').textContent = '❌ Доступ запрещен. Email ' + userEmail + ' не в списке разрешенных.';
+                // Запасной вариант (если не в Android)
+                localStorage.setItem('user_email', userEmail);
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                if (typeof initializeApp === 'function') {
+                    initializeApp();
                 }
             }
         })
@@ -7350,7 +7362,6 @@ window.handleOAuthReturn = function() {
             console.error('❌ Детали:', error);
         });
     
-    localStorage.removeItem('oauth_state');
     window.history.replaceState({}, document.title, window.location.pathname);
 };
 
@@ -7379,21 +7390,11 @@ function startGoogleLogin() {
     }
 }
 
-function handleOAuthReturn() {
-    // Эта функция теперь переопределена выше
-    // Оставляем для совместимости
-    if (typeof window._handleOAuthReturn === 'function') {
-        window._handleOAuthReturn();
-    }
-}
-
 document.getElementById('googleLoginBtn').addEventListener('click', startGoogleLogin);
 
 // Проверяем возврат из OAuth при загрузке
-// Вызываем переопределённую функцию
-if (window.location.hash.includes('access_token')) {
-    window.handleOAuthReturn();
-}
+// НЕ ВЫЗЫВАЕМ handleOAuthReturn автоматически!
+// Она будет вызвана из onPageFinished в Android
 
 // Проверяем сессию
 (function checkSession() {
