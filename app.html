@@ -145,6 +145,10 @@
             align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.4);
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .weapon-btn:active {
+            transform: scale(0.98);
         }
         .weapon-list {
             position: absolute;
@@ -171,8 +175,10 @@
             transition: background 0.1s;
             color: var(--dark);
             background: white;
+            -webkit-tap-highlight-color: transparent;
         }
         .weapon-item:hover { background: #e0f0ff; }
+        .weapon-item:active { background: #b0d4ff; }
         .weapon-item.active { background: var(--secondary); color: white; }
         .main-content {
             display: flex;
@@ -340,6 +346,10 @@
             gap: 6px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn:active {
+            transform: scale(0.97);
         }
         .btn-calculate { background: var(--primary); color: white; }
         .btn-redpoly { background: var(--red-poly); color: white; }
@@ -590,7 +600,7 @@
             Войти через Google
         </button>
         <div id="login-error">❌ Доступ запрещен. Вы не в списке разрешенных.</div>
-        <div class="version">Версия 8.8.22</div>
+        <div class="version">Версия 8.8.23</div>
     </div>
 </div>
 
@@ -743,7 +753,7 @@
         </div>
     </div>
     
-    <div class="version-info" id="appVersionDisplay">Версия: 8.8.22</div>
+    <div class="version-info" id="appVersionDisplay">Версия: 23</div>
     
     <footer>Создан Романовым А. В. / моб. версия</footer>
 </div>
@@ -7196,7 +7206,6 @@ const mortarData = {
                 }
             }
         };
-
 // ====================================================================
 // ==================== GOOGLE AUTH ===================================
 // ====================================================================
@@ -7213,61 +7222,66 @@ const ALLOWED_EMAILS = [
     'volk.volkevich246@gmail.com'
 ];
 
-const APP_VERSION = '8.8.22';
+const APP_VERSION = '8.8.23';
 
 // ====================================================================
-// ==================== OAuth ФУНКЦИИ ================================
+// ==================== ПОЛУЧЕНИЕ EMAIL ИЗ ANDROID ====================
 // ====================================================================
 
-function openInBrowser(url) {
-    // 1. Пробуем через Android-интерфейс googleLogin
-    if (typeof Android !== 'undefined' && typeof Android.googleLogin === 'function') {
-        console.log('🟢 Calling Android.googleLogin()');
-        Android.googleLogin();
-        return true;
+// Эта функция вызывается из Android-приложения через JavaScript-интерфейс
+function setUserEmailFromAndroid(email) {
+    console.log('📧 Email from Android:', email);
+    
+    if (!email) {
+        document.getElementById('login-error').style.display = 'block';
+        document.getElementById('login-error').textContent = '❌ Не получен email от приложения';
+        return;
     }
     
-    // 2. Если мы в WebView — пробуем intent
-    if (navigator.userAgent.indexOf("wv") !== -1 || 
-        navigator.userAgent.indexOf("WebView") !== -1) {
-        try {
-            var intentUrl = "intent://" + url.replace("https://", "") + 
-                           "#Intent;scheme=https;package=com.android.chrome;end";
-            window.location.href = intentUrl;
-            return true;
-        } catch(e) {
-            console.log('❌ Intent failed:', e);
+    // Проверяем белый список
+    const isAllowed = ALLOWED_EMAILS.some(e => 
+        e.toLowerCase() === email.toLowerCase()
+    );
+    
+    if (isAllowed) {
+        // Сохраняем email в localStorage
+        localStorage.setItem('user_email', email);
+        
+        // Показываем приложение, скрываем логин
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        
+        // Инициализируем приложение
+        if (typeof initializeApp === 'function') {
+            initializeApp();
         }
+        
+        // Закрываем браузер (если есть интерфейс)
+        if (typeof Android !== 'undefined' && typeof Android.closeBrowser === 'function') {
+            Android.closeBrowser();
+        }
+    } else {
+        document.getElementById('login-error').style.display = 'block';
+        document.getElementById('login-error').textContent = '❌ Доступ запрещен. Email ' + email + ' не в списке разрешенных.';
     }
-    
-    // 3. В обычном браузере
-    window.open(url, "_blank");
-    return true;
 }
 
-function startGoogleLogin() {
-    const state = Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('oauth_state', state);
-    
-    const redirectUri = "https://chanatri1-stack.github.io/artball-calculator/app.html";
-    const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
-        'client_id=' + encodeURIComponent(GOOGLE_CLIENT_ID) +
-        '&redirect_uri=' + encodeURIComponent(redirectUri) +
-        '&response_type=token' +
-        '&scope=openid%20email%20profile' +
-        '&prompt=select_account' +
-        '&state=' + encodeURIComponent(state);   // <-- УБРАЛИ nonce!
-    
-    openInBrowser(authUrl);
-}
+// ====================================================================
+// ==================== ПЕРЕОПРЕДЕЛЕНИЕ handleOAuthReturn ============
+// ====================================================================
 
-function handleOAuthReturn() {
+// Сохраняем оригинальную функцию
+const originalHandleOAuthReturn = window.handleOAuthReturn || function() {};
+
+// Переопределяем для вызова Android-интерфейса
+window.handleOAuthReturn = function() {
     const params = new URLSearchParams(window.location.hash.substring(1));
     const accessToken = params.get('access_token');
     const state = params.get('state');
     const error = params.get('error');
     const storedState = localStorage.getItem('oauth_state');
     
+    console.log('🔍 handleOAuthReturn called');
     console.log('🔍 accessToken:', accessToken ? 'ЕСТЬ' : 'НЕТ');
     console.log('🔍 error:', error);
     console.log('🔍 state:', state);
@@ -7307,20 +7321,27 @@ function handleOAuthReturn() {
                 throw new Error('Не получен email пользователя');
             }
             
-            const isAllowed = ALLOWED_EMAILS.some(email => 
-                email.toLowerCase() === userEmail.toLowerCase()
-            );
-            
-            if (isAllowed) {
-                localStorage.setItem('user_email', userEmail);
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
-                if (typeof initializeApp === 'function') {
-                    initializeApp();
-                }
+            // ===== ГЛАВНОЕ: ПЕРЕДАЁМ EMAIL В ANDROID =====
+            if (typeof Android !== 'undefined' && typeof Android.setUserEmail === 'function') {
+                console.log('📤 Sending email to Android:', userEmail);
+                Android.setUserEmail(userEmail);
             } else {
-                document.getElementById('login-error').style.display = 'block';
-                document.getElementById('login-error').textContent = '❌ Доступ запрещен. Email ' + userEmail + ' не в списке разрешенных.';
+                // Если Android-интерфейс недоступен (например, в обычном браузере)
+                console.log('⚠️ Android.setUserEmail not available, checking locally');
+                const isAllowed = ALLOWED_EMAILS.some(email => 
+                    email.toLowerCase() === userEmail.toLowerCase()
+                );
+                if (isAllowed) {
+                    localStorage.setItem('user_email', userEmail);
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'block';
+                    if (typeof initializeApp === 'function') {
+                        initializeApp();
+                    }
+                } else {
+                    document.getElementById('login-error').style.display = 'block';
+                    document.getElementById('login-error').textContent = '❌ Доступ запрещен. Email ' + userEmail + ' не в списке разрешенных.';
+                }
             }
         })
         .catch(error => {
@@ -7331,12 +7352,48 @@ function handleOAuthReturn() {
     
     localStorage.removeItem('oauth_state');
     window.history.replaceState({}, document.title, window.location.pathname);
+};
+
+// ====================================================================
+// ==================== OAuth ФУНКЦИИ ================================
+// ====================================================================
+
+function startGoogleLogin() {
+    const state = Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('oauth_state', state);
+    
+    const redirectUri = "https://chanatri1-stack.github.io/artball-calculator/app.html";
+    const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+        'client_id=' + encodeURIComponent(GOOGLE_CLIENT_ID) +
+        '&redirect_uri=' + encodeURIComponent(redirectUri) +
+        '&response_type=token' +
+        '&scope=openid%20email%20profile' +
+        '&prompt=select_account' +
+        '&state=' + encodeURIComponent(state);
+    
+    // Открываем в браузере (или через Android-интерфейс)
+    if (typeof Android !== 'undefined' && typeof Android.openBrowser === 'function') {
+        Android.openBrowser(authUrl);
+    } else {
+        window.open(authUrl, '_blank');
+    }
+}
+
+function handleOAuthReturn() {
+    // Эта функция теперь переопределена выше
+    // Оставляем для совместимости
+    if (typeof window._handleOAuthReturn === 'function') {
+        window._handleOAuthReturn();
+    }
 }
 
 document.getElementById('googleLoginBtn').addEventListener('click', startGoogleLogin);
 
 // Проверяем возврат из OAuth при загрузке
-handleOAuthReturn();
+// Вызываем переопределённую функцию
+if (window.location.hash.includes('access_token')) {
+    window.handleOAuthReturn();
+}
 
 // Проверяем сессию
 (function checkSession() {
@@ -7955,20 +8012,30 @@ function initializeApp() {
 
     document.getElementById('share-history-btn').addEventListener('click', window.shareHistory);
 
+    // ========== ИСПРАВЛЕННЫЕ ОБРАБОТЧИКИ ДЛЯ СПИСКА ОРУДИЙ ==========
+    document.getElementById('weapon-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const list = document.getElementById('weapon-list');
+        list.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function(e) {
+        const list = document.getElementById('weapon-list');
+        const btn = document.getElementById('weapon-btn');
+        if (list.classList.contains('show') && 
+            !list.contains(e.target) && 
+            !btn.contains(e.target)) {
+            list.classList.remove('show');
+        }
+    });
+
     document.querySelectorAll('.weapon-item').forEach(function(it) {
-        it.addEventListener('click', function() {
+        it.addEventListener('click', function(e) {
+            e.stopPropagation();
             selectWeapon(it.getAttribute('data-weapon'));
             document.getElementById('weapon-list').classList.remove('show');
         });
-    });
-
-    document.getElementById('weapon-btn').addEventListener('click', function(e) {
-        e.stopPropagation();
-        document.getElementById('weapon-list').classList.toggle('show');
-    });
-
-    document.addEventListener('click', function() {
-        document.getElementById('weapon-list').classList.remove('show');
     });
 
     loadSharedHistory();
