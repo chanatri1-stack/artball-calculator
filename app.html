@@ -590,7 +590,7 @@
             Войти через Google
         </button>
         <div id="login-error">❌ Доступ запрещен. Вы не в списке разрешенных.</div>
-        <div class="version">Версия 8.8.18</div>
+        <div class="version">Версия 19</div>
     </div>
 </div>
 
@@ -743,7 +743,7 @@
         </div>
     </div>
     
-    <div class="version-info" id="appVersionDisplay">Версия: 8.8.18</div>
+    <div class="version-info" id="appVersionDisplay">Версия: 8.8.19</div>
     
     <footer>Создан Романовым А. В. / моб. версия</footer>
 </div>
@@ -7201,7 +7201,7 @@ const mortarData = {
 // ==================== GOOGLE AUTH ===================================
 // ====================================================================
 
-const GOOGLE_CLIENT_ID = '908416987519-rqo40v4c3tgeng0uig059hud677c2066.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '908416987519-p9os1u3ba0a9bjkbv74lejbffuj50hrh.apps.googleusercontent.com';
 
 const ALLOWED_EMAILS = [
     'chanatri1@gmail.com',
@@ -7213,7 +7213,7 @@ const ALLOWED_EMAILS = [
     'volk.volkevich246@gmail.com'
 ];
 
-const APP_VERSION = '18';
+const APP_VERSION = '8.8.19';
 
 // ====================================================================
 // ==================== OAuth ФУНКЦИИ ================================
@@ -7249,13 +7249,15 @@ function startGoogleLogin() {
     const state = Math.random().toString(36).substring(2, 15);
     localStorage.setItem('oauth_state', state);
     
-    const redirectUri = "artballcalc://oauth";
+    // ИСПРАВЛЕНО: используем HTTPS-адрес вместо artballcalc://
+    const redirectUri = "https://chanatri1-stack.github.io/artball-calculator/app.html";
+    
     const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
         'client_id=' + encodeURIComponent(GOOGLE_CLIENT_ID) +
         '&redirect_uri=' + encodeURIComponent(redirectUri) +
         '&response_type=token' +
         '&scope=openid%20email%20profile' +
-        '&prompt=select_account' +  // <-- ДОБАВЬТЕ ЭТУ СТРОЧКУ!
+        '&prompt=select_account' +
         '&state=' + encodeURIComponent(state);
     
     openInBrowser(authUrl);
