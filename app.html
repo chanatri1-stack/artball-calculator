@@ -590,7 +590,7 @@
             Войти через Google
         </button>
         <div id="login-error">❌ Доступ запрещен. Вы не в списке разрешенных.</div>
-        <div class="version">Версия 8.8.20</div>
+        <div class="version">Версия 8.8.21</div>
     </div>
 </div>
 
@@ -743,7 +743,7 @@
         </div>
     </div>
     
-    <div class="version-info" id="appVersionDisplay">Версия: 8.8.20</div>
+    <div class="version-info" id="appVersionDisplay">Версия: 8.8.21</div>
     
     <footer>Создан Романовым А. В. / моб. версия</footer>
 </div>
@@ -7213,7 +7213,7 @@ const ALLOWED_EMAILS = [
     'volk.volkevich246@gmail.com'
 ];
 
-const APP_VERSION = '8.8.20';
+const APP_VERSION = '8.8.21';
 
 // ====================================================================
 // ==================== OAuth ФУНКЦИИ ================================
@@ -7249,16 +7249,14 @@ function startGoogleLogin() {
     const state = Math.random().toString(36).substring(2, 15);
     localStorage.setItem('oauth_state', state);
     
-    // ИСПРАВЛЕНО: используем HTTPS-адрес вместо artballcalc://
     const redirectUri = "https://chanatri1-stack.github.io/artball-calculator/app.html";
-    
     const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
         'client_id=' + encodeURIComponent(GOOGLE_CLIENT_ID) +
         '&redirect_uri=' + encodeURIComponent(redirectUri) +
         '&response_type=token' +
         '&scope=openid%20email%20profile' +
         '&prompt=select_account' +
-        '&state=' + encodeURIComponent(state);
+        '&state=' + encodeURIComponent(state);   // <-- УБРАЛИ nonce!
     
     openInBrowser(authUrl);
 }
