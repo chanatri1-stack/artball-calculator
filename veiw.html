@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История расчётов</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #0d1b2a; 
+            color: #e8e0c8; 
+            padding: 20px; 
+            min-height: 100vh;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { 
+            text-align: center; 
+            color: #e9c46a; 
+            border-bottom: 2px solid #4a6b2a; 
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        .meta {
+            text-align: center;
+            color: #6a7a4a;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+        .card { 
+            background: #1a2e1a; 
+            padding: 16px; 
+            border-radius: 16px; 
+            margin: 12px 0; 
+            border-left: 4px solid #4a6b2a;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .card-header strong {
+            color: #e9c46a;
+        }
+        .badge {
+            background: #4a6b2a;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .detail { 
+            font-size: 0.9rem; 
+            color: #a0b0a0; 
+            margin-top: 6px; 
+        }
+        .timestamp { 
+            font-size: 0.75rem; 
+            color: #6a7a4a; 
+            margin-top: 6px; 
+        }
+        .error { 
+            color: #c44536; 
+            text-align: center; 
+            padding: 40px; 
+            font-size: 1.2rem;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6a7a4a;
+        }
+        .count {
+            background: #2d3315;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: inline-block;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+        .gist-id {
+            color: #4a6b2a;
+            font-size: 0.7rem;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📋 Детали расчётов</h1>
+    <div id="content">
+        <div class="loading">⏳ Загрузка данных...</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const gistId = params.get('id');
+        const container = document.getElementById('content');
+
+        if (!gistId) {
+            container.innerHTML = `<div class="error">❌ Не указан ID</div>`;
+            return;
+        }
+
+        async function loadGist(id) {
+            try {
+                // Пытаемся загрузить Gist
+                const response = await fetch(`https://api.github.com/gists/${id}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Данные не найдены или удалены');
+                    }
+                    throw new Error('Ошибка загрузки: ' + response.status);
+                }
+
+                const gist = await response.json();
+                const files = gist.files;
+                
+                // Ищем файл history.json
+                let content = null;
+                for (const filename in files) {
+                    if (filename.endsWith('.json')) {
+                        content = files[filename].content;
+                        break;
+                    }
+                }
+
+                if (!content) {
+                    throw new Error('Нет данных в Gist');
+                }
+
+                const data = JSON.parse(content);
+                const history = data.history || [];
+                const version = data.version || '?';
+                const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleString('ru-RU') : 'неизвестно';
+
+                if (history.length === 0) {
+                    container.innerHTML = `<div class="error">📭 Нет расчётов в этой истории</div>`;
+                    return;
+                }
+
+                // Показываем данные
+                let html = `
+                    <div style="text-align:center; margin-bottom:20px;">
+                        <span class="count">📊 Всего расчётов: ${history.length}</span>
+                        <div style="margin-top:6px; color: #6a7a4a; font-size:0.8rem;">
+                            Версия: ${version} | Создано: ${timestamp}
+                        </div>
+                        <div class="gist-id">Gist ID: ${gistId}</div>
+                    </div>
+                `;
+
+                history.forEach((entry, index) => {
+                    const num = index + 1;
+                    const weapon = entry.weapon || 'Орудие';
+                    const charge = entry.charge ?? '?';
+                    const elevation = entry.elevation ?? '?';
+                    const flightTime = entry.flightTime ?? '?';
+                    const distance = Math.round(entry.distance || 0);
+                    const ownHeight = entry.ownHeight || 0;
+                    const targetHeight = entry.targetHeight || 0;
+                    const rangeCorr = Math.round(entry.rangeCorr || 0);
+                    const heightCorr = Math.round(entry.heightCorr || 0);
+                    const time = entry.timestamp || 'Время не указано';
+                    const type = entry.type || 'Элеватор';
+
+                    html += `
+                        <div class="card">
+                            <div class="card-header">
+                                <strong>#${num} ${weapon}</strong>
+                                <span class="badge">${type}</span>
+                            </div>
+                            <div style="margin-top:6px;">
+                                <span class="badge">Заряд ${charge}</span>
+                                <span class="badge">Элев. ${elevation}</span>
+                                <span class="badge">${flightTime} сек</span>
+                            </div>
+                            <div class="detail">
+                                Дальность: ${distance} м &nbsp;|&nbsp; 
+                                Своя высота: ${ownHeight} м &nbsp;|&nbsp; 
+                                Высота цели: ${targetHeight} м
+                            </div>
+                            <div class="detail">
+                                Поправка на дистанцию: ${rangeCorr} &nbsp;|&nbsp; 
+                                Поправка на высоту: ${heightCorr}
+                            </div>
+                            <div class="timestamp">🕐 ${time}</div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="error">❌ ${error.message}</div>
+                    <p style="text-align:center;color:#6a7a4a;margin-top:16px;">
+                        Проверьте ссылку или попробуйте позже
+                    </p>
+                `;
+                console.error(error);
+            }
+        }
+
+        loadGist(gistId);
+    })();
+</script>
+</body>
+</html>
