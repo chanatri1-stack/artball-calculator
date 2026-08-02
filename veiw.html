@@ -87,6 +87,23 @@
             font-size: 0.7rem;
             word-break: break-all;
         }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #4a6b2a;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #5a7b3a;
+        }
+        .center {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -100,11 +117,17 @@
 <script>
     (function() {
         const params = new URLSearchParams(window.location.search);
-        const gistId = params.get('id');
+        // ПОДДЕРЖИВАЕМ ОБА ПАРАМЕТРА: id И shared
+        const gistId = params.get('id') || params.get('shared');
         const container = document.getElementById('content');
 
         if (!gistId) {
-            container.innerHTML = `<div class="error">❌ Не указан ID</div>`;
+            container.innerHTML = `
+                <div class="error">❌ Не указан ID истории</div>
+                <div class="center">
+                    <a href="javascript:history.back()" class="back-btn">⬅ Назад</a>
+                </div>
+            `;
             return;
         }
 
@@ -144,7 +167,12 @@
                 const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleString('ru-RU') : 'неизвестно';
 
                 if (history.length === 0) {
-                    container.innerHTML = `<div class="error">📭 Нет расчётов в этой истории</div>`;
+                    container.innerHTML = `
+                        <div class="error">📭 Нет расчётов в этой истории</div>
+                        <div class="center">
+                            <a href="javascript:history.back()" class="back-btn">⬅ Назад</a>
+                        </div>
+                    `;
                     return;
                 }
 
@@ -155,7 +183,7 @@
                         <div style="margin-top:6px; color: #6a7a4a; font-size:0.8rem;">
                             Версия: ${version} | Создано: ${timestamp}
                         </div>
-                        <div class="gist-id">Gist ID: ${gistId}</div>
+                        <div class="gist-id">ID: ${gistId}</div>
                     </div>
                 `;
 
@@ -170,7 +198,7 @@
                     const targetHeight = entry.targetHeight || 0;
                     const rangeCorr = Math.round(entry.rangeCorr || 0);
                     const heightCorr = Math.round(entry.heightCorr || 0);
-                    const time = entry.timestamp || 'Время не указано';
+                    const time = entry.calculatedAt || entry.timestamp || 'Время не указано';
                     const type = entry.type || 'Элеватор';
 
                     html += `
@@ -198,6 +226,12 @@
                     `;
                 });
 
+                html += `
+                    <div class="center">
+                        <a href="javascript:history.back()" class="back-btn">⬅ Назад</a>
+                    </div>
+                `;
+
                 container.innerHTML = html;
 
             } catch (error) {
@@ -206,6 +240,9 @@
                     <p style="text-align:center;color:#6a7a4a;margin-top:16px;">
                         Проверьте ссылку или попробуйте позже
                     </p>
+                    <div class="center">
+                        <a href="javascript:history.back()" class="back-btn">⬅ Назад</a>
+                    </div>
                 `;
                 console.error(error);
             }
