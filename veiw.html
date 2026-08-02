@@ -117,7 +117,7 @@
 <script>
     (function() {
         const params = new URLSearchParams(window.location.search);
-        // ПОДДЕРЖИВАЕМ ОБА ПАРАМЕТРА: id И shared
+        // Поддерживаем оба параметра: id и shared
         const gistId = params.get('id') || params.get('shared');
         const container = document.getElementById('content');
 
@@ -176,14 +176,14 @@
                     return;
                 }
 
-                // Показываем данные
+                // Показываем данные в виде карточек (как было до этого)
                 let html = `
                     <div style="text-align:center; margin-bottom:20px;">
                         <span class="count">📊 Всего расчётов: ${history.length}</span>
                         <div style="margin-top:6px; color: #6a7a4a; font-size:0.8rem;">
                             Версия: ${version} | Создано: ${timestamp}
                         </div>
-                        <div class="gist-id">ID: ${gistId}</div>
+                        <div class="gist-id">Gist ID: ${gistId}</div>
                     </div>
                 `;
 
