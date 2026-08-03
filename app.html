@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
-    <meta name="app-version" content="8.8.38">
+    <meta name="app-version" content="8.8.39">
     
     <title>Арт. баллистический калькулятор</title>
     
@@ -1021,7 +1021,7 @@
         <div class="progress-bar">
             <div class="fill" id="progress-fill"></div>
         </div>
-        <div class="version" id="loading-version">Версия: 8.8.38</div>
+        <div class="version" id="loading-version">Версия: 8.8.39</div>
     </div>
 </div>
 
@@ -1033,8 +1033,8 @@
         <p>Обновите приложение</p>
         
         <div class="version-info">
-            <span>Текущая версия: <span id="update-current-version">8.8.38</span></span>
-            <span class="new">Новая версия: <span id="update-new-version">8.8.38</span></span>
+            <span>Текущая версия: <span id="update-current-version">8.8.39</span></span>
+            <span class="new">Новая версия: <span id="update-new-version">8.8.39</span></span>
         </div>
         
         <p style="font-size:13px; color:#999; margin-top:12px;">
@@ -1210,7 +1210,7 @@
             </div>
         </div>
         
-        <div class="version-info" id="appVersionDisplay">Версия: 8.8.38</div>
+        <div class="version-info" id="appVersionDisplay">Версия: 8.8.39</div>
         
         <footer>Создан Романовым А. В. / моб. версия</footer>
     </div>
@@ -1252,43 +1252,13 @@ const SECRET_KEY = SECRET_KEY_PART1 + SECRET_KEY_PART2;
 // ====================================================================
 
 const APP_PIN = '1488';
-const APP_VERSION = '8.8.38';
+const APP_VERSION = '8.8.39';
 
 // ====================================================================
-// ==================== ДАННЫЕ (ЗАПОЛНИТЕ САМИ) ======================
+// ==================== ДАННЫЕ (ОСТАВЛЕНЫ ПУСТЫМИ) ===================
 // ====================================================================
 
-// ⚠️⚠️⚠️ ВНИМАНИЕ! Здесь нужно заполнить данные для орудий ⚠️⚠️⚠️
-// Структура данных описана в комментариях ниже
-
-
-    // Мортирные данные (навесная стрельба)
-    // Пример структуры:
-    // '2S19': { 
-    //     name: "2С19 Мста-С", 
-    //     hasRedpoly: true, 
-    //     maxCharge: 6, 
-    //     minCharge: 0, 
-    //     step: 1,
-    //     ranges: [
-    //         { charge: 0, range: "1700-2400 м", min: 1700, max: 2400 },
-    //         // ... остальные заряды
-    //     ],
-    //     data: {
-    //         0: [ // Данные для заряда 0
-    //             [1700, 1200, null, null, 28.9], // [дальность, элеватор, поправка_высоты, ?, время]
-    //             // ... остальные строки
-    //         ],
-    //         // ... остальные заряды
-    //     }
-    // }
-
-
- 
-
-// ====================================================================
-// ==================== СИСТЕМА ОБНОВЛЕНИЙ ===========================
-// ====================================================================
+// Мортирные данные (навесная стрельба)
 
 const mortarData = {
             '2S19': { name: "2С19 Мста-С", hasRedpoly: true, maxCharge: 6, minCharge: 0, step: 1, 
@@ -7713,9 +7683,14 @@ const mortarData = {
             }
         };
 
+
+// ====================================================================
+// ==================== СИСТЕМА ОБНОВЛЕНИЙ ===========================
+// ====================================================================
+
 class UpdateManager {
     constructor() {
-        this.VERSION_URL = 'https://raw.githubusercontent.com/chanatri1-stack/artball-calculator/main/version.json';
+        this.VERSION_URL = 'https://raw.githubusercontent.com/chanatri1-stack/test-ArtBallCalc/main/version.json';
         this.CURRENT_VERSION = APP_VERSION;
     }
     
@@ -7891,11 +7866,7 @@ async function startApp() {
         document.getElementById('loading-screen').classList.add('hidden');
         document.getElementById('login-screen').classList.add('active');
         
-        const savedPin = localStorage.getItem('app_pin');
-        if (savedPin === APP_PIN) {
-            document.getElementById('pin-input').value = savedPin;
-            setTimeout(login, 500);
-        }
+        // НЕ заполняем PIN автоматически, пользователь должен ввести его сам
         
         document.getElementById('appVersionDisplay').textContent = 'Версия: ' + APP_VERSION;
         document.getElementById('loading-version').textContent = 'Версия: ' + APP_VERSION;
@@ -7934,7 +7905,10 @@ function login() {
             statusEl.textContent = '✅ Доступ разрешен!';
             statusEl.className = 'status success';
             
-            localStorage.setItem('app_pin', pin);
+            // Сохраняем PIN только для сессии (не сохраняем в localStorage)
+            // Теперь при каждом входе нужно вводить PIN заново
+            // Удаляем сохраненный PIN
+            localStorage.removeItem('app_pin');
             
             document.getElementById('login-screen').classList.remove('active');
             document.getElementById('login-screen').classList.add('hidden');
@@ -8622,10 +8596,16 @@ function initializeApp() {
         document.getElementById('results-redpoly').classList.remove('active');
     });
 
+    // Полный сброс — очищаем историю полностью
     document.getElementById('full-restart').addEventListener('click', function() {
-        if (confirm('Полный перезапуск?')) {
+        if (confirm('Полный перезапуск? Вся история будет удалена.')) {
+            // Полностью очищаем историю
             calculationHistory = [];
             updateHistoryDisplay();
+            
+            // Также удаляем сохраненный Gist ID, чтобы при следующем сохранении создавался новый
+            localStorage.removeItem('current_gist_id');
+            
             if (weapons.length > 0) {
                 currentWeapon = weapons[0];
                 if (mortarData[currentWeapon]) {
@@ -8644,6 +8624,10 @@ function initializeApp() {
             document.getElementById('auto-charge-toggle').checked = true;
             document.getElementById('charge-input-group').style.display = 'none';
             validateDistanceInput();
+            
+            // Очищаем результаты
+            document.getElementById('results-mortar').classList.remove('active');
+            document.getElementById('results-redpoly').classList.remove('active');
         }
     });
 
