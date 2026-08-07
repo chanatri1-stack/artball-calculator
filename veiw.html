@@ -3,24 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>История расчётов</title>
+    <title>Детали расчётов</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: #0d1b2a; 
-            color: #e8e0c8; 
-            padding: 20px; 
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: #0d1b2a;
+            color: #e8e0c8;
+            padding: 20px;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
-        .container { max-width: 600px; margin: 0 auto; }
-        h1 { 
-            text-align: center; 
-            color: #e9c46a; 
-            border-bottom: 2px solid #4a6b2a; 
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #e9c46a;
+            border-bottom: 2px solid #4a6b2a;
             padding-bottom: 12px;
             margin-bottom: 20px;
             font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         .meta {
             text-align: center;
@@ -28,12 +39,15 @@
             font-size: 0.85rem;
             margin-bottom: 20px;
         }
-        .card { 
-            background: #1a2e1a; 
-            padding: 16px; 
-            border-radius: 16px; 
-            margin: 12px 0; 
-            border-left: 4px solid #4a6b2a;
+        .card {
+            background: rgba(26, 46, 26, 0.85);
+            backdrop-filter: blur(4px);
+            padding: 18px 16px;
+            border-radius: 20px;
+            margin: 12px 0;
+            border-left: 5px solid #4a6b2a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
         }
         .card-header {
             display: flex;
@@ -41,89 +55,142 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 6px;
+            margin-bottom: 6px;
         }
         .card-header strong {
             color: #e9c46a;
+            font-size: 1.1rem;
         }
         .badge {
             background: #4a6b2a;
             color: white;
-            padding: 2px 10px;
-            border-radius: 20px;
+            padding: 2px 12px;
+            border-radius: 30px;
             font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+            letter-spacing: 0.3px;
+        }
+        .badge-group {
+            margin: 6px 0 8px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .badge-group .badge {
+            background: #2d4a1a;
+            color: #e8e0c8;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+        }
+        .detail-line {
+            font-size: 0.9rem;
+            color: #b0c0b0;
+            margin-top: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 12px;
+        }
+        .detail-line span {
             display: inline-block;
         }
-        .detail { 
-            font-size: 0.9rem; 
-            color: #a0b0a0; 
-            margin-top: 6px; 
+        .detail-line .sep {
+            color: #4a6b2a;
+            margin: 0 2px;
         }
-        .timestamp { 
-            font-size: 0.75rem; 
-            color: #6a7a4a; 
-            margin-top: 6px; 
+        .timestamp {
+            font-size: 0.75rem;
+            color: #6a7a4a;
+            margin-top: 8px;
+            border-top: 1px solid rgba(74, 107, 42, 0.3);
+            padding-top: 8px;
         }
-        .error { 
-            color: #c44536; 
-            text-align: center; 
-            padding: 40px; 
+        .error {
+            color: #c44536;
+            text-align: center;
+            padding: 40px 20px;
             font-size: 1.2rem;
+            background: rgba(196, 69, 54, 0.1);
+            border-radius: 20px;
+            border: 1px solid #c44536;
         }
         .loading {
             text-align: center;
             padding: 40px;
             color: #6a7a4a;
+            font-size: 1.1rem;
         }
         .count {
             background: #2d3315;
-            padding: 8px 16px;
+            padding: 6px 18px;
             border-radius: 40px;
             display: inline-block;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             font-size: 0.9rem;
-        }
-        .gist-id {
-            color: #4a6b2a;
-            font-size: 0.7rem;
-            word-break: break-all;
+            color: #e9c46a;
         }
         .back-btn {
             display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
+            margin-top: 24px;
+            padding: 12px 28px;
             background: #4a6b2a;
             color: white;
             text-decoration: none;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            transition: background 0.2s;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.1s;
+            border: none;
+            cursor: pointer;
         }
         .back-btn:hover {
             background: #5a7b3a;
         }
+        .back-btn:active {
+            transform: scale(0.97);
+        }
         .center {
             text-align: center;
         }
-        .badge-group {
-            margin-top: 6px;
+        .gist-id-hidden {
+            display: none;
+        }
+        .header-meta {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 40px;
         }
-        .badge-group .badge {
-            background: #4a6b2a;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
+        .header-meta .version-tag {
+            color: #6a7a4a;
+            font-size: 0.8rem;
         }
-        .detail-line {
-            font-size: 0.9rem;
-            color: #a0b0a0;
-            margin-top: 6px;
+        .header-meta .date-tag {
+            color: #6a7a4a;
+            font-size: 0.8rem;
         }
-        .detail-line span {
-            margin-right: 8px;
+        /* Стиль для пустого состояния */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            background: rgba(26, 46, 26, 0.5);
+            border-radius: 28px;
+            border: 2px dashed #4a6b2a;
+        }
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+        .empty-state p {
+            color: #8a9a8a;
+            font-size: 1rem;
         }
     </style>
 </head>
@@ -145,7 +212,7 @@
             container.innerHTML = `
                 <div class="error">❌ Не указан ID истории</div>
                 <div class="center">
-                    <a href="javascript:history.back()" class="back-btn">⬅ Назад</a>
+                    <button onclick="history.back()" class="back-btn">⬅ Назад</button>
                 </div>
             `;
             return;
@@ -166,7 +233,7 @@
 
                 const gist = await response.json();
                 const files = gist.files;
-                
+
                 let content = null;
                 for (const filename in files) {
                     if (filename.endsWith('.json')) {
@@ -181,27 +248,30 @@
 
                 const data = JSON.parse(content);
                 const history = data.history || [];
-                const version = data.version || '?';
-                const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleString('ru-RU') : 'неизвестно';
+                const version = data.version || 'неизвестно';
+                const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleString('ru-RU', { hour12: false }) : 'неизвестно';
 
                 if (history.length === 0) {
                     container.innerHTML = `
-                        <div class="error">📭 Нет расчётов в этой истории</div>
-                        <div class="center">
-                            <a href="javascript:history.back()" class="back-btn">⬅ Назад</a>
+                        <div class="empty-state">
+                            <div class="icon">📭</div>
+                            <p>Нет расчётов в этой истории</p>
+                            <div class="center" style="margin-top:20px;">
+                                <button onclick="history.back()" class="back-btn">⬅ Назад</button>
+                            </div>
                         </div>
                     `;
                     return;
                 }
 
-                // ТОЧНО КАК НА ФОТО - компактные карточки
+                // Строим HTML — точь-в-точь как в app.html, но без Gist ID
                 let html = `
-                    <div style="text-align:center; margin-bottom:20px;">
+                    <div class="header-meta">
+                        <span class="version-tag">📌 Версия: ${version}</span>
+                        <span class="date-tag">📅 Создано: ${timestamp}</span>
+                    </div>
+                    <div style="text-align:center; margin-bottom:16px;">
                         <span class="count">📊 Всего расчётов: ${history.length}</span>
-                        <div style="margin-top:6px; color: #6a7a4a; font-size:0.8rem;">
-                            Версия: ${version} | Создано: ${timestamp}
-                        </div>
-                        <div class="gist-id">Gist ID: ${gistId}</div>
                     </div>
                 `;
 
@@ -231,16 +301,16 @@
                                 <span class="badge">${flightTime} сек</span>
                             </div>
                             <div class="detail-line">
-                                <span>Дальность: ${distance} м</span>
-                                <span>|</span>
-                                <span>Своя высота: ${ownHeight} м</span>
-                                <span>|</span>
-                                <span>Высота цели: ${targetHeight} м</span>
+                                <span>📏 Дальность: ${distance} м</span>
+                                <span class="sep">|</span>
+                                <span>📐 Своя высота: ${ownHeight} м</span>
+                                <span class="sep">|</span>
+                                <span>📐 Высота цели: ${targetHeight} м</span>
                             </div>
                             <div class="detail-line">
-                                <span>Поправка на дистанцию: ${rangeCorr}</span>
-                                <span>|</span>
-                                <span>Поправка на высоту: ${heightCorr}</span>
+                                <span>🔄 Поправка на дистанцию: ${rangeCorr}</span>
+                                <span class="sep">|</span>
+                                <span>🔄 Поправка на высоту: ${heightCorr}</span>
                             </div>
                             <div class="timestamp">🕐 ${time}</div>
                         </div>
@@ -249,7 +319,7 @@
 
                 html += `
                     <div class="center">
-                        <a href="javascript:history.back()" class="back-btn">⬅ Назад</a>
+                        <button onclick="history.back()" class="back-btn">⬅ Назад</button>
                     </div>
                 `;
 
@@ -262,7 +332,7 @@
                         Проверьте ссылку или попробуйте позже
                     </p>
                     <div class="center">
-                        <a href="javascript:history.back()" class="back-btn">⬅ Назад</a>
+                        <button onclick="history.back()" class="back-btn">⬅ Назад</button>
                     </div>
                 `;
                 console.error(error);
