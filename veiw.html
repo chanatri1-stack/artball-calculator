@@ -2,205 +2,288 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Детали расчётов</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1e2b3a;
+            --secondary: #4A4A4A;
+            --accent: #e9c46a;
+            --danger: #c44536;
+            --success: #2a9d8f;
+            --light: #f4f9f9;
+            --dark: #0d1b2a;
+            --border: #adb5bd;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --red-poly: #b23b2c;
+            --orange: #f4a261;
+        }
+        
         body {
             font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
-            background: #0d1b2a;
-            color: #e8e0c8;
-            padding: 20px;
+            background: var(--dark) url('bg.webp') center / cover no-repeat fixed;
+            color: #000000;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            padding: 8px;
+            overflow-x: hidden;
         }
-        .container {
-            max-width: 600px;
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            margin: 0 auto;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.15);
+            pointer-events: none;
+            z-index: 0;
         }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 8px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
         h1 {
             text-align: center;
-            color: #e9c46a;
-            border-bottom: 2px solid #4a6b2a;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
+            color: var(--primary);
+            font-size: 1.6rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+            padding: 16px 12px;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            margin-bottom: 4px;
         }
-        .meta {
-            text-align: center;
-            color: #6a7a4a;
-            font-size: 0.85rem;
-            margin-bottom: 20px;
-        }
-        .card {
-            background: rgba(26, 46, 26, 0.85);
-            backdrop-filter: blur(4px);
-            padding: 18px 16px;
+        
+        .meta-info {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border-radius: 20px;
-            margin: 12px 0;
-            border-left: 5px solid #4a6b2a;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+        
+        .meta-info .version-tag {
+            opacity: 0.7;
+        }
+        
+        .meta-info .date-tag {
+            opacity: 0.7;
+        }
+        
+        .meta-info .count {
+            background: var(--secondary);
+            color: white;
+            padding: 2px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 18px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             transition: transform 0.1s;
         }
+        
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 6px;
-            margin-bottom: 6px;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
         }
-        .card-header strong {
-            color: #e9c46a;
+        
+        .card-header .weapon-name {
+            color: var(--primary);
             font-size: 1.1rem;
-        }
-        .badge {
-            background: #4a6b2a;
-            color: white;
-            padding: 2px 12px;
-            border-radius: 30px;
-            font-size: 0.7rem;
             font-weight: 600;
-            display: inline-block;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+        
+        .card-header .badge {
+            background: var(--secondary);
+            color: white;
+            border-radius: 40px;
+            padding: 2px 14px;
+            font-size: 0.75rem;
+            font-weight: 600;
             letter-spacing: 0.3px;
         }
+        
         .badge-group {
-            margin: 6px 0 8px 0;
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
+            margin-bottom: 10px;
         }
-        .badge-group .badge {
-            background: #2d4a1a;
-            color: #e8e0c8;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.75rem;
+        
+        .badge-group .badge-item {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(2px);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
+        
+        .badge-group .badge-item.highlight {
+            background: var(--red-poly);
+            color: white;
+        }
+        
         .detail-line {
             font-size: 0.9rem;
-            color: #b0c0b0;
+            color: var(--primary);
             margin-top: 4px;
             display: flex;
             flex-wrap: wrap;
             gap: 4px 12px;
+            opacity: 0.85;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
         }
-        .detail-line span {
-            display: inline-block;
-        }
+        
         .detail-line .sep {
-            color: #4a6b2a;
-            margin: 0 2px;
+            color: var(--border);
+            opacity: 0.5;
         }
+        
         .timestamp {
             font-size: 0.75rem;
-            color: #6a7a4a;
-            margin-top: 8px;
-            border-top: 1px solid rgba(74, 107, 42, 0.3);
-            padding-top: 8px;
+            color: var(--primary);
+            opacity: 0.6;
+            margin-top: 10px;
+            border-top: 1px solid rgba(222, 226, 230, 0.5);
+            padding-top: 10px;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
         }
+        
         .error {
-            color: #c44536;
-            text-align: center;
-            padding: 40px 20px;
-            font-size: 1.2rem;
-            background: rgba(196, 69, 54, 0.1);
-            border-radius: 20px;
-            border: 1px solid #c44536;
-        }
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #6a7a4a;
-            font-size: 1.1rem;
-        }
-        .count {
-            background: #2d3315;
-            padding: 6px 18px;
-            border-radius: 40px;
-            display: inline-block;
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            color: #e9c46a;
-        }
-        .back-btn {
-            display: inline-block;
-            margin-top: 24px;
-            padding: 12px 28px;
-            background: #4a6b2a;
-            color: white;
-            text-decoration: none;
-            border-radius: 40px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: background 0.2s, transform 0.1s;
-            border: none;
-            cursor: pointer;
-        }
-        .back-btn:hover {
-            background: #5a7b3a;
-        }
-        .back-btn:active {
-            transform: scale(0.97);
-        }
-        .center {
-            text-align: center;
-        }
-        .gist-id-hidden {
-            display: none;
-        }
-        .header-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
-            padding: 8px 12px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 40px;
-        }
-        .header-meta .version-tag {
-            color: #6a7a4a;
-            font-size: 0.8rem;
-        }
-        .header-meta .date-tag {
-            color: #6a7a4a;
-            font-size: 0.8rem;
-        }
-        /* Стиль для пустого состояния */
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            background: rgba(26, 46, 26, 0.5);
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border-radius: 28px;
-            border: 2px dashed #4a6b2a;
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--danger);
+            font-size: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
+        
+        .loading {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+        
+        .empty-state {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 50px 20px;
+            text-align: center;
+            border: 2px dashed var(--secondary);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
         .empty-state .icon {
             font-size: 3rem;
             margin-bottom: 12px;
             opacity: 0.5;
         }
+        
         .empty-state p {
-            color: #8a9a8a;
+            color: var(--primary);
             font-size: 1rem;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+        
+        .no-history {
+            text-align: center;
+            padding: 32px 12px;
+            background: rgba(241, 243, 245, 0.6);
+            backdrop-filter: blur(2px);
+            border-radius: 40px;
+            color: #6c757d;
+        }
+        
+        .footer {
+            text-align: center;
+            color: var(--primary);
+            font-size: 0.75rem;
+            margin-top: 8px;
+            opacity: 0.6;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+            padding: 8px 0;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>📋 Детали расчётов</h1>
+    <h1><i class="fas fa-history"></i> Детали расчётов</h1>
     <div id="content">
         <div class="loading">⏳ Загрузка данных...</div>
     </div>
+    <div class="footer">Создан Романовым А. В. / моб. версия</div>
 </div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <script>
     (function() {
@@ -210,9 +293,8 @@
 
         if (!gistId) {
             container.innerHTML = `
-                <div class="error">❌ Не указан ID истории</div>
-                <div class="center">
-                    <button onclick="history.back()" class="back-btn">⬅ Назад</button>
+                <div class="error">
+                    <i class="fas fa-exclamation-triangle"></i> Не указан ID истории
                 </div>
             `;
             return;
@@ -256,22 +338,16 @@
                         <div class="empty-state">
                             <div class="icon">📭</div>
                             <p>Нет расчётов в этой истории</p>
-                            <div class="center" style="margin-top:20px;">
-                                <button onclick="history.back()" class="back-btn">⬅ Назад</button>
-                            </div>
                         </div>
                     `;
                     return;
                 }
 
-                // Строим HTML — точь-в-точь как в app.html, но без Gist ID
                 let html = `
-                    <div class="header-meta">
-                        <span class="version-tag">📌 Версия: ${version}</span>
-                        <span class="date-tag">📅 Создано: ${timestamp}</span>
-                    </div>
-                    <div style="text-align:center; margin-bottom:16px;">
-                        <span class="count">📊 Всего расчётов: ${history.length}</span>
+                    <div class="meta-info">
+                        <span class="version-tag"><i class="fas fa-tag"></i> Версия: ${version}</span>
+                        <span class="count"><i class="fas fa-calculator"></i> ${history.length}</span>
+                        <span class="date-tag"><i class="fas fa-calendar-alt"></i> ${timestamp}</span>
                     </div>
                 `;
 
@@ -288,51 +364,52 @@
                     const heightCorr = Math.round(entry.heightCorr || 0);
                     const time = entry.calculatedAt || entry.timestamp || 'Время не указано';
                     const type = entry.type || 'Элеватор';
+                    const profileTumbler = entry.profileTumbler;
+                    const delayTumbler = entry.delayTumbler;
+                    const isRedpoly = type === 'Краснополь';
 
                     html += `
                         <div class="card">
                             <div class="card-header">
-                                <strong>#${num} ${weapon}</strong>
+                                <span class="weapon-name"><i class="fas fa-crosshairs"></i> ${weapon}</span>
                                 <span class="badge">${type}</span>
                             </div>
                             <div class="badge-group">
-                                <span class="badge">Заряд ${charge}</span>
-                                <span class="badge">Элев. ${elevation}</span>
-                                <span class="badge">${flightTime} сек</span>
+                                <span class="badge-item"><i class="fas fa-bolt"></i> Заряд ${charge}</span>
+                                <span class="badge-item"><i class="fas fa-angle-up"></i> Элев. ${elevation}</span>
+                                <span class="badge-item"><i class="fas fa-clock"></i> ${flightTime} сек</span>
+                                ${isRedpoly && profileTumbler !== undefined ? `<span class="badge-item highlight"><i class="fas fa-sliders-h"></i> Профиль: ${profileTumbler}</span>` : ''}
+                                ${isRedpoly && delayTumbler !== undefined ? `<span class="badge-item highlight"><i class="fas fa-hourglass-half"></i> Задержка: ${delayTumbler}</span>` : ''}
                             </div>
                             <div class="detail-line">
-                                <span>📏 Дальность: ${distance} м</span>
+                                <span><i class="fas fa-bullseye"></i> Дальность: ${distance} м</span>
                                 <span class="sep">|</span>
-                                <span>📐 Своя высота: ${ownHeight} м</span>
+                                <span><i class="fas fa-mountain"></i> Своя: ${ownHeight} м</span>
                                 <span class="sep">|</span>
-                                <span>📐 Высота цели: ${targetHeight} м</span>
+                                <span><i class="fas fa-bullseye"></i> Цель: ${targetHeight} м</span>
                             </div>
                             <div class="detail-line">
-                                <span>🔄 Поправка на дистанцию: ${rangeCorr}</span>
+                                <span><i class="fas fa-arrows-alt-h"></i> Попр. дист.: ${rangeCorr}</span>
                                 <span class="sep">|</span>
-                                <span>🔄 Поправка на высоту: ${heightCorr}</span>
+                                <span><i class="fas fa-arrows-alt-v"></i> Попр. выс.: ${heightCorr}</span>
                             </div>
-                            <div class="timestamp">🕐 ${time}</div>
+                            ${isRedpoly && profileTumbler !== undefined ? `
+                                <div class="detail-line">
+                                    <span><i class="fas fa-sliders-h"></i> Тумблер профиля: ${profileTumbler}</span>
+                                    ${delayTumbler !== undefined ? `<span class="sep">|</span><span><i class="fas fa-hourglass-half"></i> Тумблер задержки: ${delayTumbler}</span>` : ''}
+                                </div>
+                            ` : ''}
+                            <div class="timestamp"><i class="fas fa-clock"></i> ${time}</div>
                         </div>
                     `;
                 });
-
-                html += `
-                    <div class="center">
-                        <button onclick="history.back()" class="back-btn">⬅ Назад</button>
-                    </div>
-                `;
 
                 container.innerHTML = html;
 
             } catch (error) {
                 container.innerHTML = `
-                    <div class="error">❌ ${error.message}</div>
-                    <p style="text-align:center;color:#6a7a4a;margin-top:16px;">
-                        Проверьте ссылку или попробуйте позже
-                    </p>
-                    <div class="center">
-                        <button onclick="history.back()" class="back-btn">⬅ Назад</button>
+                    <div class="error">
+                        <i class="fas fa-exclamation-circle"></i> ${error.message}
                     </div>
                 `;
                 console.error(error);
