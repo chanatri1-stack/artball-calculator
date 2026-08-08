@@ -123,7 +123,6 @@
             padding: 18px 16px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            transition: transform 0.1s;
         }
         
         .card-header {
@@ -154,43 +153,35 @@
             letter-spacing: 0.3px;
         }
         
-        .badge-group {
+        .detail-item {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 10px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(222, 226, 230, 0.3);
         }
         
-        .badge-group .badge-item {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(2px);
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-size: 0.8rem;
+        .detail-item:last-of-type {
+            border-bottom: none;
+        }
+        
+        .detail-item .label {
+            font-size: 0.85rem;
             color: var(--primary);
+            opacity: 0.7;
             font-weight: 500;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-        
-        .badge-group .badge-item.highlight {
-            background: var(--red-poly);
-            color: white;
-        }
-        
-        .detail-line {
-            font-size: 0.9rem;
-            color: var(--primary);
-            margin-top: 4px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px 12px;
-            opacity: 0.85;
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
         }
         
-        .detail-line .sep {
-            color: var(--border);
-            opacity: 0.5;
+        .detail-item .value {
+            font-size: 0.95rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+        
+        .detail-item .value.highlight {
+            color: var(--red-poly);
         }
         
         .timestamp {
@@ -201,6 +192,9 @@
             border-top: 1px solid rgba(222, 226, 230, 0.5);
             padding-top: 10px;
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .error {
@@ -252,15 +246,6 @@
             color: var(--primary);
             font-size: 1rem;
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
-        }
-        
-        .no-history {
-            text-align: center;
-            padding: 32px 12px;
-            background: rgba(241, 243, 245, 0.6);
-            backdrop-filter: blur(2px);
-            border-radius: 40px;
-            color: #6c757d;
         }
         
         .footer {
@@ -374,32 +359,54 @@
                                 <span class="weapon-name"><i class="fas fa-crosshairs"></i> ${weapon}</span>
                                 <span class="badge">${type}</span>
                             </div>
-                            <div class="badge-group">
-                                <span class="badge-item"><i class="fas fa-bolt"></i> Заряд ${charge}</span>
-                                <span class="badge-item"><i class="fas fa-angle-up"></i> Элев. ${elevation}</span>
-                                <span class="badge-item"><i class="fas fa-clock"></i> ${flightTime} сек</span>
-                                ${isRedpoly && profileTumbler !== undefined ? `<span class="badge-item highlight"><i class="fas fa-sliders-h"></i> Профиль: ${profileTumbler}</span>` : ''}
-                                ${isRedpoly && delayTumbler !== undefined ? `<span class="badge-item highlight"><i class="fas fa-hourglass-half"></i> Задержка: ${delayTumbler}</span>` : ''}
+                            <div class="detail-item">
+                                <span class="label"><i class="fas fa-bullseye"></i> Дальность до цели</span>
+                                <span class="value">${distance} м</span>
                             </div>
-                            <div class="detail-line">
-                                <span><i class="fas fa-bullseye"></i> Дальность: ${distance} м</span>
-                                <span class="sep">|</span>
-                                <span><i class="fas fa-mountain"></i> Своя: ${ownHeight} м</span>
-                                <span class="sep">|</span>
-                                <span><i class="fas fa-bullseye"></i> Цель: ${targetHeight} м</span>
+                            <div class="detail-item">
+                                <span class="label"><i class="fas fa-mountain"></i> Своя высота</span>
+                                <span class="value">${ownHeight} м</span>
                             </div>
-                            <div class="detail-line">
-                                <span><i class="fas fa-arrows-alt-h"></i> Попр. дист.: ${rangeCorr}</span>
-                                <span class="sep">|</span>
-                                <span><i class="fas fa-arrows-alt-v"></i> Попр. выс.: ${heightCorr}</span>
+                            <div class="detail-item">
+                                <span class="label"><i class="fas fa-bullseye"></i> Высота цели</span>
+                                <span class="value">${targetHeight} м</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label"><i class="fas fa-arrows-alt-h"></i> Поправка на дистанцию</span>
+                                <span class="value">${rangeCorr}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label"><i class="fas fa-arrows-alt-v"></i> Поправка на высоту</span>
+                                <span class="value">${heightCorr}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label"><i class="fas fa-clock"></i> Полетное время</span>
+                                <span class="value">${flightTime} сек</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label"><i class="fas fa-bolt"></i> Заряд</span>
+                                <span class="value">${charge}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label"><i class="fas fa-angle-up"></i> Элеватор</span>
+                                <span class="value">${elevation}</span>
                             </div>
                             ${isRedpoly && profileTumbler !== undefined ? `
-                                <div class="detail-line">
-                                    <span><i class="fas fa-sliders-h"></i> Тумблер профиля: ${profileTumbler}</span>
-                                    ${delayTumbler !== undefined ? `<span class="sep">|</span><span><i class="fas fa-hourglass-half"></i> Тумблер задержки: ${delayTumbler}</span>` : ''}
+                                <div class="detail-item">
+                                    <span class="label"><i class="fas fa-sliders-h"></i> Тумблер профиля</span>
+                                    <span class="value highlight">${profileTumbler}</span>
                                 </div>
                             ` : ''}
-                            <div class="timestamp"><i class="fas fa-clock"></i> ${time}</div>
+                            ${isRedpoly && delayTumbler !== undefined ? `
+                                <div class="detail-item">
+                                    <span class="label"><i class="fas fa-hourglass-half"></i> Тумблер задержки</span>
+                                    <span class="value highlight">${delayTumbler}</span>
+                                </div>
+                            ` : ''}
+                            <div class="timestamp">
+                                <span><i class="fas fa-clock"></i> Время расчёта</span>
+                                <span>${time}</span>
+                            </div>
                         </div>
                     `;
                 });
