@@ -1,0 +1,204 @@
+/* ===== ARTBALL-THEME-PATCH-V1 ===== */
+
+/* --- Фикс бегунков: убираем "квадратик с галочкой" нативный чекбокс --- */
+.toggle-switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+    z-index: 1;
+    appearance: none;
+    -webkit-appearance: none;
+}
+input:checked + .slider {
+    background-color: #00BFFF;
+}
+input:checked + .slider:before {
+    transform: translateX(24px);
+    -webkit-transform: translateX(24px);
+}
+
+/* --- Слои фона с плавным кроссфейдом --- */
+#bg-day, #bg-night {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+    transition: opacity 2s ease-in-out;
+    will-change: opacity;
+    pointer-events: none;
+}
+#bg-day   { background-image: url('../bg.webp');   opacity: 1; }
+#bg-night { background-image: url('../bg_2.webp'); opacity: 0; }
+.night-theme #bg-day   { opacity: 0; }
+.night-theme #bg-night { opacity: 1; }
+
+/* --- Ночной контейнер переключателей --- */
+.night-theme .toggle-container {
+    background: rgba(16, 33, 58, 0.82) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+.night-theme .toggle-group span {
+    color: #e6ebf2 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+}
+.night-theme .charge-ranges {
+    background: rgba(16, 33, 58, 0.65) !important;
+    border-left-color: #5b6a7c !important;
+}
+
+/* ---- Ночная тема: тёмно-синие полупрозрачные "окна" + светлый текст ---- */
+.night-theme {
+    --primary: #dce4ee !important;
+    --border: #40607f !important;
+    --secondary: #5e7894 !important;
+    --card-bg: rgba(10, 24, 44, 0.8) !important;
+    color: #eef2f6 !important;
+}
+.night-theme body { color: #eef2f6; }
+
+/* Основные окна -> тёмно-серые полупрозрачные */
+.night-theme .login-card,
+.night-theme .update-card,
+.night-theme .loading-card,
+.night-theme .calculator-card,
+.night-theme .history-card,
+.night-theme .modal-content {
+    background: rgba(10, 24, 44, 0.82) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55) !important;
+}
+.night-theme .modal-content { background: rgba(6, 14, 27, 0.97) !important; }
+
+/* Собственное окно уведомлений в ночной теме */
+.night-theme #alert-modal h3 { color: #e6ebf2 !important; }
+.night-theme #alert-modal .alert-body { color: #c9d4e2 !important; }
+.night-theme #alert-ok-btn {
+    background: #2c4a77 !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+.night-theme #alert-confirm-btn {
+    background: #8c2f23 !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+.night-theme #alert-cancel-btn {
+    background: #3a4a5c !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+/* Внутренние светлые плашки -> тёмные полупрозрачные */
+.night-theme .range-item,
+.night-theme .result-item,
+.night-theme .history-table,
+.night-theme .restart-section {
+    background: rgba(16, 33, 58, 0.65) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Кнопки и элементы списка */
+.night-theme .btn,
+.night-theme .share-btn,
+.night-theme .weapon-item {
+    background: rgba(24, 47, 82, 0.78) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    color: #e6f0f6 !important;
+}
+.night-theme .weapon-btn {
+    background: rgba(13, 27, 42, 0.95) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+}
+.night-theme .weapon-item.active { background: rgba(48, 76, 122, 0.95) !important; color: #fff !important; }
+
+/* Заголовки и основные тексты -> светлые */
+.night-theme h1, .night-theme h2, .night-theme h3, .night-theme h4,
+.night-theme .section-title, .night-theme .subtitle,
+.night-theme .result-label, .night-theme .result-value,
+.night-theme .modal-content h3, .night-theme .login-card h2,
+.night-theme .restart-section h3 {
+    color: #e6ebf2 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Вторичный текст -> приглушённо светлый */
+.night-theme .login-card .subtitle,
+.night-theme .login-card .hint,
+.night-theme .login-card .status.loading,
+.night-theme .range-item .charge,
+.night-theme .form-grid label,
+.night-theme .fieldlabel,
+.night-theme footer {
+    color: #9fb0c2 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Поля ввода -> тёмные, светлый текст и placeholder */
+.night-theme input,
+.night-theme select,
+.night-theme textarea {
+    background: rgba(45, 66, 98, 0.9) !important;
+    color: #eaf3f8 !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+.night-theme ::placeholder { color: #9fb0c2 !important; }
+.night-theme input:focus,
+.night-theme select:focus,
+.night-theme textarea:focus { border-color: #9ab7d4 !important; }
+
+/* Таблица истории */
+.night-theme .history-table th,
+.night-theme .history-table td {
+    color: #c9d4e2 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+.night-theme .history-table thead th {
+    background: rgba(6, 14, 27, 0.9) !important;
+    color: #ffffff !important;
+    text-shadow: none !important;
+}
+
+/* QR-ссылка и статусные плашки */
+.night-theme #qr-link-display {
+    background: rgba(13, 27, 42, 0.9) !important;
+    color: #c9d4e0 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Тумблеры "Краснополь" (inline-стили): тёмно-синие; рекомендуемый красный */
+.night-theme div[style*="rgba(255,255,255,0.7)"] {
+    background: rgba(16, 33, 58, 0.75) !important;
+    color: #eef2f6 !important;
+}
+.night-theme div[style*="var(--red-poly)"] {
+    background: var(--red-poly) !important;
+    color: #ffffff !important;
+}
+
+/* Плавные переходы цветов/тени для ночной темы */
+.night-theme .login-card,
+.night-theme .update-card,
+.night-theme .loading-card,
+.night-theme .calculator-card,
+.night-theme .history-card,
+.night-theme .modal-content,
+.night-theme .range-item,
+.night-theme .result-item,
+.night-theme .history-table,
+.night-theme .toggle-container,
+.night-theme .charge-ranges,
+.night-theme input,
+.night-theme select,
+.night-theme textarea,
+.night-theme .btn,
+.night-theme .share-btn,
+.night-theme .weapon-item {
+    transition: background-color 1.2s ease, border-color 1.2s ease, color 1.2s ease, box-shadow 1.2s ease;
+}
