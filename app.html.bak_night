@@ -34,7 +34,7 @@
         
         body {
             font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
-            background: var(--dark);
+            background: var(--dark) url('bg.webp') center / cover no-repeat fixed;
             color: #000000;
             min-height: 100vh;
             padding: 8px;
@@ -63,7 +63,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(75, 83, 32, 0.92);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             display: flex;
@@ -151,7 +151,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(75, 83, 32, 0.92);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             display: none;
@@ -228,9 +228,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: transparent;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
+            background: rgba(75, 83, 32, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -373,7 +373,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: transparent;
+            background: var(--dark) url('bg.webp') center / cover no-repeat fixed;
             display: none;
             justify-content: center;
             align-items: center;
@@ -492,6 +492,8 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
             display: none;
             border: 2px solid var(--secondary);
         }
@@ -514,70 +516,6 @@
         .weapon-item:hover { background: rgba(75, 83, 32, 0.1); }
         .weapon-item:active { background: rgba(75, 83, 32, 0.2); }
         .weapon-item.active { background: var(--secondary); color: white; }
-        
-        /* ==== Замки и подписи уровней доступа в списке орудий ==== */
-        .weapon-item.locked {
-            opacity: 0.55;
-            cursor: not-allowed;
-        }
-        .weapon-item.locked:hover,
-        .weapon-item.locked:active { background: transparent; }
-        .weapon-item .weapon-lock {
-            margin-left: auto;
-            font-size: 0.9rem;
-        }
-        .weapon-item .weapon-req-level {
-            margin-left: auto;
-            font-size: 0.7rem;
-            opacity: 0.85;
-            white-space: nowrap;
-        }
-        .weapon-item.active .weapon-req-level { color: white; }
-        
-        /* ==== Режим "Ручной ввод" ==== */
-        .manual-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-bottom: 18px;
-        }
-        .manual-grid .input-group { min-width: 0; }
-        @media (max-width: 380px) {
-            .manual-grid { grid-template-columns: 1fr; }
-        }
-        .manual-values-block {
-            background: rgba(237, 242, 247, 0.6);
-            backdrop-filter: blur(4px);
-            border-radius: 20px;
-            padding: 10px 14px;
-            margin-top: 12px;
-            border-left: 4px solid var(--secondary);
-        }
-        .manual-values-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-        .manual-values-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .manual-value-chip {
-            flex: 1 1 45%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 16px;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-        .manual-value-chip .mv-label { opacity: 0.75; font-weight: 500; }
-        .manual-value-chip .mv-value { font-weight: 700; color: var(--primary); }
         
         .main-content {
             display: flex;
@@ -1046,88 +984,12 @@
             letter-spacing: 0.5px;
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
         }
-        
-        /* --- Собственное окно уведомлений (вместо системного alert) --- */
-        .alert-body {
-            margin: 4px 0 18px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            color: #333;
-            text-align: left;
-            word-break: break-word;
-        }
-        .alert-body ul {
-            margin: 0;
-            padding-left: 20px;
-            list-style: disc;
-        }
-        .alert-body li {
-            margin-bottom: 6px;
-        }
-        .alert-body p { margin: 0 0 6px; }
-        #alert-modal .modal-content {
-            text-align: center;
-        }
-        #alert-ok-btn {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 40px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        #alert-ok-btn:active { transform: scale(0.98); }
-        .alert-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 4px;
-        }
-        .alert-buttons .close-modal {
-            flex: 1;
-            margin: 0;
-        }
-        #alert-confirm-btn {
-            background: var(--danger);
-            color: #fff;
-        }
-        #alert-cancel-btn {
-            background: var(--secondary);
-            color: #fff;
-            border: none;
-            border-radius: 40px;
-            padding: 14px 16px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
     </style>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link rel="stylesheet" href="css/night-theme.css">
 </head>
 <body>
-
-<!-- ARTBALL-THEME-PATCH-V1 -->
-<div id="bg-day"></div>
-<div id="bg-night"></div>
-<script>
-    (function () {
-        try {
-            var h = new Date().getHours();
-            var night = (h >= 21 || h < 7);
-            document.body.classList.toggle('night-theme', night);
-            var bgDay    = document.getElementById('bg-day');
-            var bgNight  = document.getElementById('bg-night');
-            if (bgDay)     bgDay.style.opacity     = night ? '0' : '1';
-            if (bgNight)   bgNight.style.opacity    = night ? '1' : '0';
-        } catch (e) {}
-    })();
-</script>
 
 <!-- ЭКРАН ЗАГРУЗКИ -->
 <div id="loading-screen">
@@ -1219,7 +1081,7 @@
         </header>
 
         <div class="main-content">
-            <div class="calculator-card" id="normal-input-section">
+            <div class="calculator-card">
                 <div class="section-title"><i class="fas fa-cogs"></i>Параметры</div>
 
                 <div class="toggle-container">
@@ -1234,13 +1096,6 @@
                         <span id="trajectory-label"><i class="fas fa-chart-line"></i> Настильная стрельба</span>
                         <label class="toggle-switch">
                             <input type="checkbox" id="trajectory-toggle">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="toggle-group" id="night-theme-toggle-group">
-                        <span><i class="fas fa-moon"></i> Ночная тема</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="night-mode-toggle">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -1276,23 +1131,18 @@
                 </div>
 
                 <div class="buttons">
-                    <button class="btn btn-calculate" id="calculate-mortar"><i class="fas fa-calculator"></i> Расчитать</button>
+                    <button class="btn btn-calculate" id="calculate-mortar"><i class="fas fa-calculator"></i> Элеватор</button>
                     <button class="btn btn-redpoly" id="calculate-redpoly"><i class="fas fa-crosshairs"></i> Краснополь</button>
                     <button class="btn btn-reset" id="reset-calculator"><i class="fas fa-redo"></i> Сброс</button>
                 </div>
 
                 <div class="results" id="results-mortar">
-                    <h3 style="font-size:1.2rem;"><i class="fas fa-chart-line"></i> Расчитать</h3>
+                    <h3 style="font-size:1.2rem;"><i class="fas fa-chart-line"></i> Элеватор</h3>
                     <div class="result-grid">
                         <div class="result-item"><div class="result-label">Режим</div><div class="result-value" id="mortar-mode">Мортирный</div></div>
                         <div class="result-item"><div class="result-label">Заряд</div><div class="result-value" id="mortar-charge">0</div></div>
                         <div class="result-item"><div class="result-label">Время</div><div class="result-value time" id="mortar-flight-time">0</div></div>
                         <div class="result-item"><div class="result-label">Элеватор</div><div class="result-value angle" id="mortar-elevation">0</div></div>
-                    </div>
-                    <!-- Введенные вручную значения (показывается только в режиме "Ручной ввод") -->
-                    <div id="manual-entered-values" class="manual-values-block" style="display:none;">
-                        <div class="manual-values-title"><i class="fas fa-keyboard"></i> Введенные значения:</div>
-                        <div class="manual-values-grid" id="manual-entered-grid"></div>
                     </div>
                 </div>
 
@@ -1306,58 +1156,6 @@
                     </div>
                     <h4 style="margin:16px 0 6px; font-size:1rem;">Настройка тумблеров</h4>
                     <div id="redpoly-tumblers" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:6px;"></div>
-                </div>
-            </div>
-
-            <!-- КАРТОЧКА "РУЧНОЙ ВВОД": все числа из формулы вводятся вручную, расчет производится по формуле -->
-            <div class="calculator-card" id="manual-input-section" style="display:none;">
-                <div class="section-title"><i class="fas fa-keyboard"></i>Ручной ввод</div>
-
-                <div class="manual-grid">
-                    <div class="input-group">
-                        <label><i class="fas fa-angle-up"></i> Верхний элеватор (0-1600)</label>
-                        <input type="number" id="manual-elev-top" placeholder="верхний элеватор" min="0" max="1600" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-angle-down"></i> Нижний элеватор (0-1600)</label>
-                        <input type="number" id="manual-elev-bottom" placeholder="нижний элеватор" min="0" max="1600" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-arrows-alt-v"></i> Шаг дальности</label>
-                        <input type="number" id="manual-range-step" placeholder="шаг дальности" min="0">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-bullseye"></i> Дальность до цели (м)</label>
-                        <input type="number" id="manual-distance" placeholder="дальность до цели" min="0">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-crosshairs"></i> Дальность верхнего прицела</label>
-                        <input type="number" id="manual-elev-range" placeholder="дальность верхнего прицела" min="0">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-mountain"></i> Своя высота (м)</label>
-                        <input type="number" id="manual-own-height" value="0">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-mountain"></i> Высота цели (м)</label>
-                        <input type="number" id="manual-target-height" value="0">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-arrows-alt-h"></i> Поправка на разн. выс.</label>
-                        <input type="number" id="manual-height-ratio" value="0">
-                    </div>
-                </div>
-
-                <div class="buttons">
-                    <button class="btn btn-calculate" id="calculate-manual"><i class="fas fa-calculator"></i> Расчитать</button>
-                    <button class="btn btn-reset" id="reset-manual"><i class="fas fa-redo"></i> Сброс</button>
-                </div>
-
-                <div class="results" id="results-manual">
-                    <h3 style="font-size:1.2rem;"><i class="fas fa-chart-line"></i> Расчет</h3>
-                    <div class="result-grid" style="margin-top:0;">
-                        <div class="result-item"><div class="result-label">Элеватор</div><div class="result-value angle" id="manual-res-elevation">0</div></div>
-                    </div>
                 </div>
             </div>
 
@@ -1408,19 +1206,6 @@
     </div>
 </div>
 
-<!-- СОБСТВЕННОЕ УВЕДОМЛЕНИЕ КАЛЬКУЛЯТОРА (вместо системного alert) -->
-<div id="alert-modal" class="modal">
-    <div class="modal-content alert-content">
-        <h3><i class="fas fa-exclamation-triangle"></i> <span id="alert-title">Ошибка</span></h3>
-        <div id="alert-body" class="alert-body"></div>
-        <div class="alert-buttons">
-            <button class="close-modal btn-primary" id="alert-ok-btn">Понятно</button>
-            <button class="close-modal btn-danger" id="alert-confirm-btn" style="display:none;">Удалить</button>
-            <button class="close-modal btn-cancel" id="alert-cancel-btn" style="display:none;">Отмена</button>
-        </div>
-    </div>
-</div>
-
 <script src="data.js"></script>
 <script>
 // ====================================================================
@@ -1432,26 +1217,10 @@ const SECRET_KEY_PART2 = 'o4Sls4a';
 const SECRET_KEY = SECRET_KEY_PART1 + SECRET_KEY_PART2;
 
 // ====================================================================
-// ============ УРОВНИ ДОСТУПА И ПИН-КОДЫ (4 УРОВНЯ) ==================
+// ==================== ВЕРСИЯ И ПИН-КОД =============================
 // ====================================================================
-// 1 уровень доступа (ACCESS_LEVEL_1) — пароль '1111' — доступен только "Ручной ввод"
-// 2 уровень доступа (ACCESS_LEVEL_2) — пароль '2222' — "Ручной ввод" + 2Б14, 2Б11 и Hilux (Podnos)
-// 3 уровень доступа (ACCESS_LEVEL_3) — пароль '3333' — все орудия, КРОМЕ 2Б26 Град-К и 9К58 Торнадо-С
-// 4 уровень доступа (ACCESS_LEVEL_4) — пароль '4444' — доступны все орудия
-const ACCESS_LEVEL_1_PASSWORD = '1349';
-const ACCESS_LEVEL_2_PASSWORD = '9784';
-const ACCESS_LEVEL_3_PASSWORD = '1845';
-const ACCESS_LEVEL_4_PASSWORD = '2001';
 
-const ACCESS_LEVEL_PASSWORDS = {
-    [ACCESS_LEVEL_1_PASSWORD]: 1,
-    [ACCESS_LEVEL_2_PASSWORD]: 2,
-    [ACCESS_LEVEL_3_PASSWORD]: 3,
-    [ACCESS_LEVEL_4_PASSWORD]: 4
-};
-
-const ACCESS_LEVEL_COUNT = 4;          // всего уровней доступа
-const MAX_ACCESS_LEVEL = 4;            // максимальный (полный) уровень доступа
+const APP_PIN = '1945';
 const APP_VERSION = '8.8.52';
 
 // ====================================================================
@@ -1629,12 +1398,8 @@ function login() {
     statusEl.className = 'status loading';
     
     setTimeout(() => {
-        // Определяем уровень доступа по введенному паролю (1..4)
-        const accessLevel = ACCESS_LEVEL_PASSWORDS[pin];
-        if (accessLevel) {
-            // Сохраняем текущий уровень доступа в localStorage (сбрасывается "Полным сбросом")
-            localStorage.setItem('app_access_level', String(accessLevel));
-            statusEl.textContent = '✅ Доступ разрешен! (уровень ' + accessLevel + ')';
+        if (pin === APP_PIN) {
+            statusEl.textContent = '✅ Доступ разрешен!';
             statusEl.className = 'status success';
             localStorage.removeItem('app_pin');
             document.getElementById('login-screen').classList.remove('active');
@@ -1717,144 +1482,15 @@ function initializeApp() {
     let isFlatTrajectory = false;
     let calculationHistory = [];
 
-    // ==== РЕЖИМ "РУЧНОЙ ВВОД" ====
-    // Ключ псевдо-орудия "Ручной ввод" (идет первым в списке, доступен с 1 уровня доступа)
-    const MANUAL_MODE = 'MANUAL_INPUT';
-
-    // Получаем список всех доступных орудий + пункт "Ручной ввод" (первый в списке)
+    // Получаем список всех доступных орудий
     function getAvailableWeapons() {
         const weapons = new Set();
         Object.keys(mortarData).forEach(key => weapons.add(key));
         Object.keys(flatData).forEach(key => weapons.add(key));
-        // Сортируем орудия по уровням доступа (от меньшего к большему)
-        const sorted = Array.from(weapons).sort((a, b) => getWeaponAccessLevel(a) - getWeaponAccessLevel(b));
-        // "Ручной ввод" всегда первый в списке
-        return [MANUAL_MODE].concat(sorted);
-    }
-
-    // ==== УРОВНИ ДОСТУПА ====
-    // Требуемый уровень доступа для орудия (чем выше уровень, тем больше орудий открыто):
-    // 1 уровень — только "Ручной ввод";
-    // 2 уровень — "Ручной ввод" + 2Б14, 2Б11 и Hilux (Podnos);
-    // 3 уровень — все орудия, КРОМЕ 2Б26 Град-К и 9К58 Торнадо-С;
-    // 4 уровень — все орудия (включая 2Б26 Град-К и 9К58 Торнадо-С).
-    function getWeaponAccessLevel(weapon) {
-        switch (weapon) {
-            case MANUAL_MODE: return 1;                          // "Ручной ввод" — 1 уровень доступа
-            case '2B14': case '2B11': case 'Hilux': return 2;    // 2Б14, 2Б11 и Hilux (Podnos) — 2 уровень доступа
-            case '2B26': case 'TornadoS': return 4;              // 2Б26 Град-К и 9К58 Торнадо-С — только 4 уровень доступа
-            default: return 3;                                   // все остальные орудия — 3 уровень доступа
-        }
-    }
-
-    // Текущий уровень доступа (сохраняется при входе по паролю; пароль вводится при каждом запуске приложения)
-    function getCurrentAccessLevel() {
-        const saved = parseInt(localStorage.getItem('app_access_level')) || 0;
-        return Math.min(Math.max(saved, 0), MAX_ACCESS_LEVEL);
-    }
-
-    // Проверка: орудие/режим доступно при текущем уровне доступа?
-    function isWeaponUnlocked(weapon) {
-        return getWeaponAccessLevel(weapon) <= getCurrentAccessLevel();
-    }
-
-    // Подпись, с какого уровня доступа открывается орудие (для подсказки при клике на заблокированное)
-    function getRequiredLevelText(weapon) {
-        const lvl = getWeaponAccessLevel(weapon);
-        if (lvl === 1) return 'доступен с 1 уровня';
-        return 'доступно с ' + lvl + ' уровня';
-    }
-
-    // Отрисовать чипы "Введенные значения" (по 2 значения в ряд)
-    function renderManualValuesGrid(gridEl, vals) {
-        if (!gridEl) return;
-        gridEl.innerHTML = '';
-        vals.forEach(v => {
-            if (!v || v.value === undefined || v.value === null || v.value === '' || isNaN(v.value)) return;
-            const chip = document.createElement('div');
-            chip.className = 'manual-value-chip';
-            chip.innerHTML = '<span class="mv-label">' + v.label + '</span><span class="mv-value">' + v.value + '</span>';
-            gridEl.appendChild(chip);
-        });
-    }
-
-    // Прочитать все введенные вручную значения (режим "Ручной ввод")
-    function readManualValues() {
-        const g = id => document.getElementById(id);
-        return {
-            elevTop: parseFloat(g('manual-elev-top').value),        // верхний элеватор
-            elevBottom: parseFloat(g('manual-elev-bottom').value),  // нижний элеватор
-            rangeStep: parseFloat(g('manual-range-step').value),    // шаг дальности
-            distance: parseFloat(g('manual-distance').value),       // дальность до цели
-            elevRange: parseFloat(g('manual-elev-range').value),    // дальность верхнего прицела
-            ownHeight: parseFloat(g('manual-own-height').value) || 0,    // своя высота
-            targetHeight: parseFloat(g('manual-target-height').value) || 0, // высота цели
-            heightRatio: parseFloat(g('manual-height-ratio').value) || 0  // поправка на разн. выс.
-        };
-    }
-
-    // ==== ОГРАНИЧЕНИЯ ДИАПАЗОНОВ ВВОДА В РЕЖИМЕ "РУЧНОЙ ВВОД" ====
-    const MANUAL_ELEV_MIN = 0;    // минимальный элеватор (верхний/нижний), тыс.
-    const MANUAL_ELEV_MAX = 1600; // максимальный элеватор (верхний/нижний), тыс.
-
-    // Проверка заполненности обязательных полей и диапазонов значений "Ручного ввода"
-    function validateManualInput() {
-        const v = readManualValues();
-        // Обязательные поля
-        if (isNaN(v.elevTop)) { alert('Введите верхний элеватор'); return null; }
-        if (isNaN(v.elevBottom)) { alert('Введите нижний элеватор'); return null; }
-        if (isNaN(v.rangeStep) || v.rangeStep <= 0) { alert('Введите шаг дальности (больше 0)'); return null; }
-        if (isNaN(v.distance) || v.distance <= 0) { alert('Введите дальность до цели (м)'); return null; }
-        if (isNaN(v.elevRange)) { alert('Введите дальность верхнего прицела'); return null; }
-        if (isNaN(v.ownHeight)) { alert('Введите свою высоту (м)'); return null; }
-        if (isNaN(v.targetHeight)) { alert('Введите высоту цели (м)'); return null; }
-        if (isNaN(v.heightRatio)) { alert('Введите поправку на разн. выс.'); return null; }
-
-        // Верхний и нижний элеватор ограничены диапазоном 0-1600
-        if (v.elevTop < MANUAL_ELEV_MIN || v.elevTop > MANUAL_ELEV_MAX) {
-            alert('Верхний элеватор должен быть от ' + MANUAL_ELEV_MIN + ' до ' + MANUAL_ELEV_MAX);
-            return null;
-        }
-        if (v.elevBottom < MANUAL_ELEV_MIN || v.elevBottom > MANUAL_ELEV_MAX) {
-            alert('Нижний элеватор должен быть от ' + MANUAL_ELEV_MIN + ' до ' + MANUAL_ELEV_MAX);
-            return null;
-        }
-        return v;
-    }
-
-    // ==== РАСЧЕТ ПО ФОРМУЛЕ РУЧНОГО ВВОДА ====
-    // Поправка на дистанцию =
-    //   "верхний элеватор" - (("верхний элеватор" - "нижний элеватор") / "шаг дальности") * ("дальность до цели" - "дальность верхнего прицела")
-    // Поправка на высоту =
-    //   ("своя высота" - "высота цели") / 100 * "поправка на разн. выс."
-    // Элеватор = "поправка на высоту" + "поправка на дистанцию"
-    function calculateManualFormula(v) {
-        const rangeCorr = v.elevTop - ((v.elevTop - v.elevBottom) / v.rangeStep) * (v.distance - v.elevRange);
-        const heightCorr = ((v.ownHeight - v.targetHeight) / 100) * v.heightRatio;
-        const elevation = heightCorr + rangeCorr;
-        return {
-            rangeCorr: rangeCorr,
-            heightCorr: heightCorr,
-            elevation: elevation
-        };
-    }
-
-    // Список чипов "Введенные значения" для режима "Ручной ввод" (порядок = порядок полей ввода)
-    function buildManualChipsList(v) {
-        return [
-            { label: 'Верхний элеватор:', value: v.elevTop },
-            { label: 'Нижний элеватор:', value: v.elevBottom },
-            { label: 'Шаг дальности:', value: v.rangeStep },
-            { label: 'Дальность до цели:', value: Math.round(v.distance) + ' м' },
-            { label: 'Дальность верхнего прицела:', value: Math.round(v.elevRange) },
-            { label: 'Своя высота:', value: (v.ownHeight || 0) + ' м' },
-            { label: 'Высота цели:', value: (v.targetHeight || 0) + ' м' },
-            { label: 'Поправка на разн. выс.:', value: v.heightRatio || 0 }
-        ];
+        return Array.from(weapons);
     }
 
     function getWeaponName(weaponKey) {
-        if (weaponKey === MANUAL_MODE) return 'Ручной ввод';
         if (mortarData[weaponKey]) return mortarData[weaponKey].name;
         if (flatData[weaponKey]) return flatData[weaponKey].name;
         return weaponKey;
@@ -1865,8 +1501,6 @@ function initializeApp() {
     }
 
     function hasWeaponData() {
-        // В режиме "Ручной ввод" таблицы не нужны
-        if (currentWeapon === MANUAL_MODE) return true;
         return !!(mortarData[currentWeapon] || flatData[currentWeapon]);
     }
 
@@ -2078,14 +1712,10 @@ function initializeApp() {
         };
     }
 
-    function addToHistory(res, type = 'Элеватор', extra = null, manualExtras = null) {
-        // Орудие для записи истории: в режиме "Ручной ввод" пишем "Ручной ввод"
-        const historyWeaponName = (currentWeapon === MANUAL_MODE) ? 'Ручной ввод' :
-            (getCurrentDataSource()?.name || currentWeapon);
-
+    function addToHistory(res, type = 'Элеватор', extra = null) {
         const entry = {
             id: Date.now(),
-            weapon: historyWeaponName,
+            weapon: getCurrentDataSource()?.name || currentWeapon,
             distance: res.distance,
             charge: res.charge,
             elevation: res.elevation,
@@ -2100,11 +1730,6 @@ function initializeApp() {
         if (extra) {
             entry.profileTumbler = extra.profileTumbler;
             entry.delayTumbler = extra.delayTumbler;
-        }
-        // Для режима "Ручной ввод" сохраняем все введенные значения (для деталей и "Поделиться")
-        if (manualExtras && manualExtras.manualValues) {
-            entry.isManual = true;
-            entry.manualValues = manualExtras.manualValues;
         }
         calculationHistory.unshift(entry);
         if (calculationHistory.length > 50) calculationHistory.pop();
@@ -2135,31 +1760,15 @@ function initializeApp() {
         if (Array.isArray(entry)) {
             html = '<h4 style="margin-bottom:12px;">📋 Общая история расчётов</h4><hr>';
             entry.forEach((e, index) => {
-                // Блок "Введенные значения" для расчетов в режиме "Ручной ввод"
-                let manualHtml = '';
-                if (e.manualValues && e.manualValues.length > 0) {
-                    manualHtml = `
-                        <p><strong>⌨️ Введенные значения:</strong></p>
-                        <div class="manual-values-grid" style="margin:6px 0 10px;">
-                            ${e.manualValues.map(mv => `
-                                <div class="manual-value-chip">
-                                    <span class="mv-label">${mv.label}</span>
-                                    <span class="mv-value">${mv.value}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                }
                 html += `
                     <div class="history-detail-item">
                         <p><strong>#${index + 1}</strong> — ${e.weapon || 'Орудие'} (${e.type || 'Элеватор'})</p>
-                        ${manualHtml}
-                        ${e.isManual ? '' : `<p>📏 Дальность: ${Math.round(e.distance)} м</p>`}
-                        ${e.isManual ? '' : `<p>🔢 Заряд: ${e.charge}</p>`}
+                        <p>📏 Дальность: ${Math.round(e.distance)} м</p>
+                        <p>🔢 Заряд: ${e.charge}</p>
                         <p>🎯 Элеватор: ${e.elevation}</p>
                         ${e.profileTumbler !== undefined ? `<p>🔘 Тумблер профиля: ${e.profileTumbler}</p>` : ''}
                         ${e.delayTumbler !== undefined ? `<p>⏱ Тумблер задержки: ${e.delayTumbler}</p>` : ''}
-                        ${e.isManual ? '' : `<p>⏱ Время полёта: ${e.flightTime || 0} сек</p>`}
+                        <p>⏱ Время полёта: ${e.flightTime || 0} сек</p>
                         <p>📐 Поправка на дистанцию: ${Math.round(e.rangeCorr || 0)}</p>
                         <p>📐 Поправка на высоту: ${Math.round(e.heightCorr || 0)}</p>
                         <p>🕒 Время расчёта: ${e.calculatedAt || '—'}</p>
@@ -2167,32 +1776,16 @@ function initializeApp() {
                 `;
             });
         } else {
-            // Одиночная запись истории (в том числе из режима "Ручной ввод")
-            let manualHtml = '';
-            if (entry.manualValues && entry.manualValues.length > 0) {
-                manualHtml = `
-                    <p style="margin-top:8px;"><strong>⌨️ Введенные значения:</strong></p>
-                    <div class="manual-values-grid">
-                        ${entry.manualValues.map(mv => `
-                            <div class="manual-value-chip">
-                                <span class="mv-label">${mv.label}</span>
-                                <span class="mv-value">${mv.value}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
             html = `
                 <p><strong>Орудие:</strong> ${entry.weapon}</p>
                 <p><strong>Тип расчёта:</strong> ${entry.type || 'Элеватор'}</p>
-                ${manualHtml}
-                ${entry.isManual ? '' : `<p><strong>Дальность до цели:</strong> ${Math.round(entry.distance)} м</p>`}
-                ${entry.isManual ? '' : `<p><strong>Своя высота:</strong> ${entry.ownHeight || 0} м</p>`}
-                ${entry.isManual ? '' : `<p><strong>Высота цели:</strong> ${entry.targetHeight || 0} м</p>`}
+                <p><strong>Дальность до цели:</strong> ${Math.round(entry.distance)} м</p>
+                <p><strong>Своя высота:</strong> ${entry.ownHeight || 0} м</p>
+                <p><strong>Высота цели:</strong> ${entry.targetHeight || 0} м</p>
                 <p><strong>Поправка на дистанцию:</strong> ${Math.round(entry.rangeCorr || 0)}</p>
                 <p><strong>Поправка на высоту:</strong> ${Math.round(entry.heightCorr || 0)}</p>
-                ${entry.isManual ? '' : `<p><strong>Полетное время:</strong> ${entry.flightTime || 0} сек</p>`}
-                ${entry.isManual ? '' : `<p><strong>Заряд:</strong> ${entry.charge}</p>`}
+                <p><strong>Полетное время:</strong> ${entry.flightTime || 0} сек</p>
+                <p><strong>Заряд:</strong> ${entry.charge}</p>
                 <p><strong>Элеватор:</strong> ${entry.elevation}</p>
                 ${entry.profileTumbler !== undefined ? `<p><strong>Тумблер профиля:</strong> ${entry.profileTumbler}</p>` : ''}
                 ${entry.delayTumbler !== undefined ? `<p><strong>Тумблер задержки:</strong> ${entry.delayTumbler}</p>` : ''}
@@ -2294,14 +1887,6 @@ function initializeApp() {
         const statusSpan = document.getElementById('trajectory-status');
         const redpolyBtn = document.getElementById('calculate-redpoly');
 
-        // В режиме "Ручной ввод" настройки стрельбы не нужны
-        if (currentWeapon === MANUAL_MODE) {
-            labelSpan.innerHTML = '<i class="fas fa-keyboard"></i> Ручной ввод';
-            statusSpan.innerHTML = '⌨️ Ручной ввод';
-            redpolyBtn.style.display = 'none';
-            return;
-        }
-
         if (!hasWeaponData()) {
             labelSpan.innerHTML = '<i class="fas fa-chart-line"></i> Нет данных';
             statusSpan.innerHTML = '⚠️ Заполните данные для орудия';
@@ -2366,30 +1951,9 @@ function initializeApp() {
             div.className = 'weapon-item';
             if (weapon === currentWeapon) div.classList.add('active');
             div.setAttribute('data-weapon', weapon);
-
-            // Проверяем уровень доступа: заблокированные орудия помечаются замком
-            const unlocked = isWeaponUnlocked(weapon);
-            if (!unlocked) div.classList.add('locked');
-
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = getWeaponName(weapon);
-            div.appendChild(nameSpan);
-
-            if (!unlocked) {
-                // Замочек рядом с названием заблокированного орудия
-                const lockSpan = document.createElement('span');
-                lockSpan.className = 'weapon-lock';
-                lockSpan.textContent = '🔒';
-                div.appendChild(lockSpan);
-            }
-
+            div.textContent = getWeaponName(weapon);
             div.addEventListener('click', function(e) {
                 e.stopPropagation();
-                // Попытка выбрать заблокированное орудие — показываем, с какого уровня доступа оно открывается
-                if (!isWeaponUnlocked(weapon)) {
-                    alert('🔒 ' + getWeaponName(weapon) + ' — ' + getRequiredLevelText(weapon) + ' доступа');
-                    return;
-                }
                 selectWeapon(weapon);
                 document.getElementById('weapon-list').classList.remove('show');
             });
@@ -2399,21 +1963,6 @@ function initializeApp() {
 
     function selectWeapon(weapon) {
         currentWeapon = weapon;
-        const isManual = (weapon === MANUAL_MODE);
-
-        // Показываем/скрываем карточку "Ручной ввод" и обычную карточку параметров
-        document.getElementById('manual-input-section').style.display = isManual ? 'block' : 'none';
-        document.getElementById('normal-input-section').style.display = isManual ? 'none' : 'block';
-
-        if (isManual) {
-            // Скрываем результаты обычного расчета при переходе в ручной ввод
-            document.getElementById('results-mortar').classList.remove('active');
-            document.getElementById('results-redpoly').classList.remove('active');
-            document.getElementById('selected-weapon').innerText = getWeaponName(weapon);
-            updateWeaponList();
-            return;
-        }
-
         if (isFlatTrajectory && !flatData[weapon]) {
             isFlatTrajectory = false;
         }
@@ -2430,20 +1979,14 @@ function initializeApp() {
     // Инициализация списка орудий
     const weapons = getAvailableWeapons();
     if (weapons.length > 0) {
-        // По умолчанию выбираем первое ДОСТУПНОЕ (незаблокированное) орудие из списка
-        // ("Ручной ввод" в списке первый, но по умолчанию открываем обычное орудие)
-        const firstUnlocked = weapons.find(w => w !== MANUAL_MODE && isWeaponUnlocked(w));
-        currentWeapon = firstUnlocked || MANUAL_MODE;
-        if (currentWeapon === MANUAL_MODE) {
-            isFlatTrajectory = false;
-        } else if (mortarData[currentWeapon]) {
+        currentWeapon = weapons[0];
+        if (mortarData[currentWeapon]) {
             isFlatTrajectory = false;
         } else if (flatData[currentWeapon]) {
             isFlatTrajectory = true;
         }
         document.getElementById('selected-weapon').innerText = getWeaponName(currentWeapon);
-        // Сразу применяем видимость секций (обычная / "Ручной ввод")
-        selectWeapon(currentWeapon);
+        updateWeaponList();
     }
 
     // Обработчики событий
@@ -2477,8 +2020,6 @@ function initializeApp() {
     });
 
     document.getElementById('calculate-mortar').addEventListener('click', function() {
-        // В режиме "Ручной ввод" обычный расчет недоступен — есть только своя кнопка "Расчитать"
-        if (currentWeapon === MANUAL_MODE) return;
         if (!hasWeaponData()) {
             alert('Нет данных для выбранного орудия! Заполните mortarData или flatData.');
             return;
@@ -2498,74 +2039,12 @@ function initializeApp() {
             document.getElementById('mortar-charge').innerText = res.charge;
             document.getElementById('mortar-flight-time').innerText = res.flightTime + ' сек';
             document.getElementById('mortar-elevation').innerText = res.elevation;
-            // Блок "Введенные значения" показывается только в режиме "Ручной ввод"
-            document.getElementById('manual-entered-values').style.display = 'none';
             document.getElementById('results-mortar').classList.add('active');
             document.getElementById('results-redpoly').classList.remove('active');
             addToHistory(res, 'Элеватор');
         } catch (e) {
             alert('Ошибка расчета: ' + e.message);
         }
-    });
-
-    // ==== ОБРАБОТЧИКИ "РУЧНОГО ВВОДА" ====
-    document.getElementById('calculate-manual').addEventListener('click', function() {
-        // Валидация введенных вручную чисел
-        const v = validateManualInput();
-        if (!v) return;
-
-        // Расчёт по формуле ручного ввода
-        const res = calculateManualFormula(v);
-
-        // Чипы "Введенные значения" — используются только в деталях/истории, НЕ в окне результатов
-        const chips = buildManualChipsList(v);
-
-        // В окне результатов показываем только итоговый "Элеватор"
-        document.getElementById('manual-res-elevation').innerText = Math.round(res.elevation);
-
-        document.getElementById('results-manual').classList.add('active');
-        document.getElementById('results-mortar').classList.remove('active');
-        document.getElementById('results-redpoly').classList.remove('active');
-
-        // Сохраняем расчет в историю вместе со всеми введенными значениями
-        addToHistory({
-            distance: v.distance,
-            charge: null,
-            elevation: res.elevation,
-            flightTime: null,
-            ownHeight: v.ownHeight,
-            targetHeight: v.targetHeight,
-            rangeCorrection: res.rangeCorr,
-            heightCorrection: res.heightCorr
-        }, 'Элеватор', null, { manualValues: chips });
-    });
-
-    // Сброс полей ручного ввода (кнопка «Сброс» в карточке «Ручной ввод»)
-    document.getElementById('reset-manual').addEventListener('click', function() {
-        // Очищаем обязательные поля ввода
-        ['manual-elev-top', 'manual-elev-bottom', 'manual-range-step',
-         'manual-distance', 'manual-elev-range'].forEach(id => {
-            document.getElementById(id).value = '';
-        });
-        // Поля, у которых по умолчанию 0 — возвращаем к 0
-        document.getElementById('manual-own-height').value = '0';
-        document.getElementById('manual-target-height').value = '0';
-        document.getElementById('manual-height-ratio').value = '0';
-        // Скрываем блок результатов ручного ввода
-        document.getElementById('results-manual').classList.remove('active');
-    });
-
-    // ==== ОГРАНИЧЕНИЯ ВВОДА В РЕЖИМЕ "РУЧНОЙ ВВОД" ====
-    // Верхний и нижний элеватор: от 0 до 1600
-    document.getElementById('manual-elev-top').addEventListener('input', function() {
-        let val = parseFloat(this.value);
-        if (!isNaN(val) && val < MANUAL_ELEV_MIN) this.value = MANUAL_ELEV_MIN;
-        if (!isNaN(val) && val > MANUAL_ELEV_MAX) this.value = MANUAL_ELEV_MAX;
-    });
-    document.getElementById('manual-elev-bottom').addEventListener('input', function() {
-        let val = parseFloat(this.value);
-        if (!isNaN(val) && val < MANUAL_ELEV_MIN) this.value = MANUAL_ELEV_MIN;
-        if (!isNaN(val) && val > MANUAL_ELEV_MAX) this.value = MANUAL_ELEV_MAX;
     });
 
     document.getElementById('calculate-redpoly').addEventListener('click', function() {
@@ -2612,7 +2091,6 @@ function initializeApp() {
             profiles.forEach(p => {
                 const isActive = p.t === closest.t;
                 const div = document.createElement('div');
-                div.className = isActive ? 'redpoly-tumbler active' : 'redpoly-tumbler';
                 div.style.cssText = `
                     flex: 1 1 80px;
                     background: ${isActive ? 'var(--red-poly)' : 'rgba(255,255,255,0.7)'};
@@ -2656,17 +2134,20 @@ function initializeApp() {
     });
 
     document.getElementById('full-restart').addEventListener('click', function() {
-        showAppConfirm('Полный перезапуск? Вся история будет удалена.', function() {
+        if (confirm('Полный перезапуск? Вся история будет удалена.')) {
             calculationHistory = [];
             updateHistoryDisplay();
             localStorage.removeItem('current_gist_id');
             
             if (weapons.length > 0) {
-                // Выбираем первое ДОСТУПНОЕ (незаблокированное) орудие, как при инициализации
-                // ("Ручной ввод" в списке первый, поэтому берем первое реальное доступное орудие)
-                const firstUnlocked = weapons.find(w => w !== MANUAL_MODE && isWeaponUnlocked(w));
-                currentWeapon = firstUnlocked || MANUAL_MODE;
-                selectWeapon(currentWeapon);
+                currentWeapon = weapons[0];
+                if (mortarData[currentWeapon]) {
+                    isFlatTrajectory = false;
+                } else if (flatData[currentWeapon]) {
+                    isFlatTrajectory = true;
+                }
+                document.getElementById('selected-weapon').innerText = getWeaponName(currentWeapon);
+                updateWeaponList();
             }
             updateUIForTrajectory();
             document.getElementById('distance').value = '1100';
@@ -2678,7 +2159,7 @@ function initializeApp() {
             validateDistanceInput();
             document.getElementById('results-mortar').classList.remove('active');
             document.getElementById('results-redpoly').classList.remove('active');
-        });
+        }
     });
 
     document.getElementById('share-history-btn').addEventListener('click', shareHistoryWithQR);
@@ -2720,102 +2201,7 @@ window.closeQRModal = function() {
     document.getElementById('qr-modal').style.display = 'none';
 };
 
-// ====================================================================
-// ==== СОБСТВЕННОЕ УВЕДОМЛЕНИЕ / ДИАЛОГ КАЛЬКУЛЯТОРА ====
-// ====================================================================
-
-// Текущий колбэк подтверждения (для окна с кнопкой "Удалить")
-let appConfirmCallback = null;
-
-// --- Заполнение текста тела окна (строкой, массивом, узлом) ---
-function setAlertBody(content, body) {
-    if (typeof body === 'string') {
-        content.innerHTML = '<p>' + body + '</p>';
-    } else if (Array.isArray(body)) {
-        const items = body.map(item => '<li>' + item + '</li>').join('');
-        content.innerHTML = '<ul>' + items + '</ul>';
-    } else if (body && body.nodeType) {
-        content.innerHTML = '';
-        content.appendChild(body);
-    } else {
-        content.innerHTML = '<p>' + String(body == null ? '' : body) + '</p>';
-    }
-}
-
-// --- Окно уведомления (как alert) ---
-function showAppAlert(body) {
-    const modal = document.getElementById('alert-modal');
-    setAlertBody(document.getElementById('alert-body'), body);
-    // показать только кнопку "Понятно"
-    document.getElementById('alert-title').textContent = 'Ошибка';
-    document.getElementById('alert-ok-btn').style.display = '';
-    document.getElementById('alert-confirm-btn').style.display = 'none';
-    document.getElementById('alert-cancel-btn').style.display = 'none';
-    modal.style.display = 'flex';
-}
-
-// --- Окно-подтверждение (как confirm) с кнопками "Удалить"/"Отмена" ---
-function showAppConfirm(message, onConfirm) {
-    const modal = document.getElementById('alert-modal');
-    setAlertBody(document.getElementById('alert-body'), message);
-    // показать кнопки подтверждения
-    document.getElementById('alert-title').textContent = 'Подтверждение';
-    document.getElementById('alert-ok-btn').style.display = 'none';
-    document.getElementById('alert-confirm-btn').style.display = '';
-    document.getElementById('alert-cancel-btn').style.display = '';
-    appConfirmCallback = onConfirm || null;
-    modal.style.display = 'flex';
-}
-
-function closeAppAlert() {
-    appConfirmCallback = null;
-    document.getElementById('alert-modal').style.display = 'none';
-}
-
-// Все системные browser-уведомления отправляем в собственное окно
-window.alert = function (msg) { showAppAlert(msg); };
-window.showAppAlert = showAppAlert;
-window.showAppConfirm = showAppConfirm;
-window.onAlertOk = closeAppAlert;
-window.closeAppAlert = closeAppAlert;
-
-// Обработчики кнопок модального окна
-(function () {
-    const okBtn        = document.getElementById('alert-ok-btn');
-    const confirmBtn   = document.getElementById('alert-confirm-btn');
-    const cancelBtn    = document.getElementById('alert-cancel-btn');
-    const alertModal   = document.getElementById('alert-modal');
-
-    if (okBtn) okBtn.addEventListener('click', closeAppAlert);
-
-    if (confirmBtn) {
-        confirmBtn.addEventListener('click', function () {
-            const cb = appConfirmCallback;
-            closeAppAlert();
-            if (typeof cb === 'function') cb();
-        });
-    }
-    if (cancelBtn) cancelBtn.addEventListener('click', closeAppAlert);
-
-    if (alertModal) {
-        // Закрытие по клику на затемнённый фон (вне содержимого)
-        alertModal.addEventListener('click', function (e) {
-            const contentBox = alertModal.querySelector('.modal-content');
-            if (contentBox && !contentBox.contains(e.target)) {
-                closeAppAlert();
-            }
-        });
-        // Закрытие по Esc
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && alertModal.style.display === 'flex') {
-                closeAppAlert();
-            }
-        });
-    }
-})();
-
 console.log('✅ Артиллерийский калькулятор загружен. Версия: ' + APP_VERSION);
 </script>
-<script src="js/theme.js"></script>
 </body>
 </html>
